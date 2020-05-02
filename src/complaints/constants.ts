@@ -1,0 +1,1 @@
+export const COMPLAINTS_MODEL = 'COMPLAINTS_MODEL';

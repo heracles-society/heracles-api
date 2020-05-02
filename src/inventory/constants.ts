@@ -1,0 +1,1 @@
+export const INVENTORY_MODEL = 'INVENTORY_MODEL';

@@ -1,0 +1,1 @@
+export const SOCIETY_MODEL = 'SOCIETY_MODEL';
