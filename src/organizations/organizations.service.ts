@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { ORGANIZATION_MODEL } from './constants';
+import { ORGANIZATION_PROVIDER } from './constants';
 import { Model } from 'mongoose';
 import { Organization } from './interface/organization.interface';
 import { CreateOrganizationDto } from './dto/organization.dto';
@@ -7,7 +7,7 @@ import { CreateOrganizationDto } from './dto/organization.dto';
 @Injectable()
 export class OrganizationsService {
   constructor(
-    @Inject(ORGANIZATION_MODEL)
+    @Inject(ORGANIZATION_PROVIDER)
     private readonly organizationModel: Model<Organization>,
   ) {}
 

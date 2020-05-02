@@ -1,1 +1,2 @@
-export const ORGANIZATION_MODEL = 'ORGANIZATION_MODEL';
+export const ORGANIZATION_MODEL = 'Organization';
+export const ORGANIZATION_PROVIDER = `${ORGANIZATION_MODEL.toUpperCase()}_PROVIDER`;
