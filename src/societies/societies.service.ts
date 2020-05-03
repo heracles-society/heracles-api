@@ -1,15 +1,15 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { CreateSocietyDto } from './dto/society.dto';
 import { Society } from './interface/society.interface';
-import { SOCIETY_MODEL } from './constants';
+import { SOCIETY_PROVIDER } from './constants';
 import { Model } from 'mongoose';
-import { OrganizationsService } from '../organizations/organizations.service';
+import { OrganizationService } from '../organizations/organizations.service';
 
 @Injectable()
 export class SocietiesService {
   constructor(
-    @Inject(SOCIETY_MODEL) private readonly societyModel: Model<Society>,
-    private readonly organizationService: OrganizationsService,
+    @Inject(SOCIETY_PROVIDER) private readonly societyModel: Model<Society>,
+    private readonly organizationService: OrganizationService,
   ) {}
 
   async create(createSocietyDto: CreateSocietyDto): Promise<Society> {

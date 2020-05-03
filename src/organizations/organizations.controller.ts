@@ -4,13 +4,14 @@ import {
   CreateOrganizationDto,
   CreatedOrganization,
 } from './dto/organization.dto';
-import { OrganizationsService } from './organizations.service';
-import { ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { OrganizationService } from './organizations.service';
+import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
+@ApiTags('organizations')
 @Controller('organizations')
 export class OrganizationsController {
-  constructor(private readonly organizationService: OrganizationsService) {}
+  constructor(private readonly organizationService: OrganizationService) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -34,9 +35,9 @@ export class OrganizationsController {
   @ApiOkResponse({
     type: CreatedOrganization,
   })
-  async findById(@Param('id') userId: string): Promise<Organization> {
+  async findById(@Param('id') orgId: string): Promise<Organization> {
     return this.organizationService.findOne({
-      _id: new Types.ObjectId(userId),
+      _id: new Types.ObjectId(orgId),
     });
   }
 }

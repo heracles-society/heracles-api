@@ -5,16 +5,23 @@ import {
   Get,
   BadRequestException,
   ServiceUnavailableException,
+  Param,
 } from '@nestjs/common';
 import { Society } from './interface/society.interface';
-import { CreateSocietyDto } from './dto/society.dto';
+import { CreateSocietyDto, CreatedSocietyDto } from './dto/society.dto';
 import { SocietiesService } from './societies.service';
+import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
+@ApiTags('societies')
 @Controller('societies')
 export class SocietiesController {
   constructor(private readonly societyService: SocietiesService) {}
 
   @Post()
+  @ApiCreatedResponse({
+    type: CreatedSocietyDto,
+  })
   async create(@Body() createCatDto: CreateSocietyDto): Promise<Society> {
     try {
       const society = await this.societyService.create(createCatDto);
@@ -31,7 +38,20 @@ export class SocietiesController {
   }
 
   @Get()
+  @ApiOkResponse({
+    type: [CreatedSocietyDto],
+  })
   async findAll(): Promise<Society[]> {
     return this.societyService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOkResponse({
+    type: CreatedSocietyDto,
+  })
+  async findById(@Param('id') societyId: string): Promise<Society> {
+    return this.societyService.findOne({
+      _id: new Types.ObjectId(societyId),
+    });
   }
 }

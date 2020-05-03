@@ -5,7 +5,7 @@ import { Organization } from './interface/organization.interface';
 import { CreateOrganizationDto } from './dto/organization.dto';
 
 @Injectable()
-export class OrganizationsService {
+export class OrganizationService {
   constructor(
     @Inject(ORGANIZATION_PROVIDER)
     private readonly organizationModel: Model<Organization>,
