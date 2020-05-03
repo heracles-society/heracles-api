@@ -15,7 +15,6 @@ export class ComplaintService {
 
   async create(createComplaintDto: CreateComplaintDto): Promise<Complaint> {
     const { raisedBy, ...restProps } = createComplaintDto;
-    // throw new Error();
     const raisedByRecord = this.userService.findOne({
       _id: new Types.ObjectId(raisedBy),
     });

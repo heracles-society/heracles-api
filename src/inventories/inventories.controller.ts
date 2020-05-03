@@ -4,8 +4,8 @@ import {
   Body,
   Get,
   BadRequestException,
-  ServiceUnavailableException,
   Param,
+  NotFoundException,
 } from '@nestjs/common';
 import { InventoryService } from './inventories.service';
 import { CreateInventoryDto, CreatedInventoryDto } from './dto/inventory.dto';
@@ -26,18 +26,11 @@ export class InventoriesController {
   async create(
     @Body() createInventoryDto: CreateInventoryDto,
   ): Promise<Inventory> {
-    try {
-      const society = await this.inventoryService.create(createInventoryDto);
-      if (society === null) {
-        throw new BadRequestException();
-      }
-      return society;
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new ServiceUnavailableException();
+    const society = await this.inventoryService.create(createInventoryDto);
+    if (society === null) {
+      throw new BadRequestException();
     }
+    return society;
   }
 
   @Get()
@@ -52,9 +45,13 @@ export class InventoriesController {
   @ApiOkResponse({
     type: CreatedInventoryDto,
   })
-  async findById(@Param('id') orgId: string): Promise<Inventory> {
-    return this.inventoryService.findOne({
-      _id: new Types.ObjectId(orgId),
+  async findById(@Param('id') inventoryId: string): Promise<Inventory> {
+    const inventoryRecord = this.inventoryService.findOne({
+      _id: new Types.ObjectId(inventoryId),
     });
+    if (inventoryRecord) {
+      return inventoryRecord;
+    }
+    throw new NotFoundException();
   }
 }

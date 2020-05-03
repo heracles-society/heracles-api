@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto, CreatedUserDto } from './dto/user.dto';
 import { User } from './interface/user.interface';
@@ -15,7 +23,11 @@ export class UsersController {
     type: CreatedUserDto,
   })
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.create(createUserDto);
+    const userRecord = this.userService.create(createUserDto);
+    if (userRecord) {
+      return userRecord;
+    }
+    throw new BadRequestException();
   }
 
   @Get()
@@ -31,6 +43,12 @@ export class UsersController {
     type: CreatedUserDto,
   })
   async findById(@Param('id') userId: string): Promise<User> {
-    return this.userService.findOne({ _id: new Types.ObjectId(userId) });
+    const userRecord = this.userService.findOne({
+      _id: new Types.ObjectId(userId),
+    });
+    if (userRecord) {
+      return userRecord;
+    }
+    throw new NotFoundException();
   }
 }

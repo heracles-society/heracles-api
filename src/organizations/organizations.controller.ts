@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Organization } from './interface/organization.interface';
 import {
   CreateOrganizationDto,
@@ -20,7 +28,13 @@ export class OrganizationsController {
   async create(
     @Body() createOrganizationDto: CreateOrganizationDto,
   ): Promise<Organization> {
-    return this.organizationService.create(createOrganizationDto);
+    const organizationRecord = this.organizationService.create(
+      createOrganizationDto,
+    );
+    if (organizationRecord) {
+      return organizationRecord;
+    }
+    throw new BadRequestException();
   }
 
   @Get()
@@ -36,8 +50,12 @@ export class OrganizationsController {
     type: CreatedOrganization,
   })
   async findById(@Param('id') orgId: string): Promise<Organization> {
-    return this.organizationService.findOne({
+    const organizationRecord = this.organizationService.findOne({
       _id: new Types.ObjectId(orgId),
     });
+    if (organizationRecord) {
+      return organizationRecord;
+    }
+    throw new NotFoundException();
   }
 }

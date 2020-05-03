@@ -6,6 +6,7 @@ import {
   BadRequestException,
   ServiceUnavailableException,
   Param,
+  NotFoundException,
 } from '@nestjs/common';
 import { Society } from './interface/society.interface';
 import { CreateSocietyDto, CreatedSocietyDto } from './dto/society.dto';
@@ -23,18 +24,11 @@ export class SocietiesController {
     type: CreatedSocietyDto,
   })
   async create(@Body() createCatDto: CreateSocietyDto): Promise<Society> {
-    try {
-      const society = await this.societyService.create(createCatDto);
-      if (society === null) {
-        throw new BadRequestException();
-      }
-      return society;
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new ServiceUnavailableException();
+    const societyRecord = await this.societyService.create(createCatDto);
+    if (societyRecord) {
+      return societyRecord;
     }
+    throw new BadRequestException();
   }
 
   @Get()
@@ -50,8 +44,12 @@ export class SocietiesController {
     type: CreatedSocietyDto,
   })
   async findById(@Param('id') societyId: string): Promise<Society> {
-    return this.societyService.findOne({
+    const societyRecord = this.societyService.findOne({
       _id: new Types.ObjectId(societyId),
     });
+    if (societyRecord) {
+      return societyRecord;
+    }
+    throw new NotFoundException();
   }
 }
