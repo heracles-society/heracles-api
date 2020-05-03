@@ -12,7 +12,12 @@ const databaseProviders = [
       configService: ConfigService,
     ): Promise<typeof mongoose> => {
       const dbURL = configService.get<string>('DATABASE_URL');
-      return await mongoose.connect(dbURL);
+      return await mongoose.connect(dbURL, {
+        /**
+         * To handle the deprecation warning while using findOneAndUpdate() and findOneAndRemove()
+         */
+        useFindAndModify: false,
+      });
     },
   },
 ];
