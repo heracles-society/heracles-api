@@ -68,7 +68,7 @@ export class ComplaintsController {
     @Param() complaintId: string,
     @Body() patchComplaintDto: PatchComplaintDto,
   ) {
-    const patchedComplaint = this.complaintService.updateOne(
+    const patchedComplaint = await this.complaintService.updateOne(
       { _id: new Types.ObjectId(complaintId) },
       patchComplaintDto,
     );

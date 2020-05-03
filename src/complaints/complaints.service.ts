@@ -19,7 +19,7 @@ export class ComplaintService {
 
   async create(createComplaintDto: CreateComplaintDto): Promise<Complaint> {
     const { raisedBy, ...restProps } = createComplaintDto;
-    const raisedByRecord = this.userService.findOne({
+    const raisedByRecord = await this.userService.findOne({
       _id: new Types.ObjectId(raisedBy),
     });
 
@@ -46,9 +46,18 @@ export class ComplaintService {
     params: any,
     updateDoc: PatchComplaintDto,
   ): Promise<Complaint> {
-    const record = await this.complaintModel.findOneAndUpdate(params, {
-      ...updateDoc,
+    const { raisedBy, ...restProps } = updateDoc;
+    const raisedByRecord = await this.userService.findOne({
+      _id: new Types.ObjectId(raisedBy),
     });
-    return record;
+
+    if (raisedBy ? raisedByRecord : true) {
+      const record = await this.complaintModel.findOneAndUpdate(params, {
+        ...restProps,
+        raisedBy: raisedBy ? raisedByRecord.id : null,
+      });
+      return record;
+    }
+    return null;
   }
 }
