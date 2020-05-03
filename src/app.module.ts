@@ -5,6 +5,7 @@ import configuration from './config/configuration';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { SocietiesModule } from './societies/societies.module';
+import { InventoriesModule } from './inventories/inventories.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SocietiesModule } from './societies/societies.module';
     OrganizationsModule,
     SocietiesModule,
     UsersModule,
+    InventoriesModule,
   ],
   providers: [],
 })

@@ -9,14 +9,14 @@ import {
 } from '@nestjs/common';
 import { Society } from './interface/society.interface';
 import { CreateSocietyDto, CreatedSocietyDto } from './dto/society.dto';
-import { SocietiesService } from './societies.service';
+import { SocietyService } from './societies.service';
 import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
 @ApiTags('societies')
 @Controller('societies')
 export class SocietiesController {
-  constructor(private readonly societyService: SocietiesService) {}
+  constructor(private readonly societyService: SocietyService) {}
 
   @Post()
   @ApiCreatedResponse({

@@ -5,14 +5,17 @@ import {
   Get,
   BadRequestException,
   ServiceUnavailableException,
+  Param,
 } from '@nestjs/common';
-import { InventoryService } from './inventory.service';
+import { InventoryService } from './inventories.service';
 import { CreateInventoryDto, CreatedInventory } from './dto/inventory.dto';
 import { Inventory } from './interface/inventory.interface';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
-@Controller('inventory')
-export class InventoryController {
+@ApiTags('inventories')
+@Controller('inventories')
+export class InventoriesController {
   constructor(private inventoryService: InventoryService) {}
 
   @Post()
@@ -43,5 +46,15 @@ export class InventoryController {
   })
   async findAll(): Promise<Inventory[]> {
     return this.inventoryService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOkResponse({
+    type: CreatedInventory,
+  })
+  async findById(@Param('id') orgId: string): Promise<Inventory> {
+    return this.inventoryService.findOne({
+      _id: new Types.ObjectId(orgId),
+    });
   }
 }

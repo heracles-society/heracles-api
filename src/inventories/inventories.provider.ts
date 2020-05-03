@@ -1,13 +1,13 @@
 import { Mongoose } from 'mongoose';
 import { InventorySchema } from './schemas/inventory.schema';
-import { INVENTORY_MODEL } from './constants';
+import { INVENTORY_MODEL, INVENTORY_PROVIDER } from './constants';
 import { DATABASE_CONNECTION } from '../database/constants';
 
 export const inventoryProviders = [
   {
-    provide: INVENTORY_MODEL,
+    provide: INVENTORY_PROVIDER,
     useFactory: (mongoose: Mongoose) =>
-      mongoose.model('Inventory', InventorySchema),
+      mongoose.model(INVENTORY_MODEL, InventorySchema),
     inject: [DATABASE_CONNECTION],
   },
 ];

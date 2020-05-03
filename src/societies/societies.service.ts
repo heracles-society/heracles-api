@@ -2,11 +2,11 @@ import { Injectable, Inject } from '@nestjs/common';
 import { CreateSocietyDto } from './dto/society.dto';
 import { Society } from './interface/society.interface';
 import { SOCIETY_PROVIDER } from './constants';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { OrganizationService } from '../organizations/organizations.service';
 
 @Injectable()
-export class SocietiesService {
+export class SocietyService {
   constructor(
     @Inject(SOCIETY_PROVIDER) private readonly societyModel: Model<Society>,
     private readonly organizationService: OrganizationService,
@@ -15,7 +15,7 @@ export class SocietiesService {
   async create(createSocietyDto: CreateSocietyDto): Promise<Society> {
     const { name, organization } = createSocietyDto;
     const organizationRecord = await this.organizationService.findOne({
-      name: organization,
+      _id: new Types.ObjectId(organization),
     });
     if (organizationRecord) {
       const createdSociety = new this.societyModel({
