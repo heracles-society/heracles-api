@@ -1,10 +1,10 @@
-import { OmitType } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
 
-export const enum ComplaintType {
+export enum ComplaintKind {
   NORMAL = 'NORMAL',
 }
 
-export const enum ComplaintStatus {
+export enum ComplaintStatus {
   PENDING = 'PENDING',
   ASSIGNED = 'ASSIGNED',
   IN_PROGRESS = 'IN_PROGRESS',
@@ -12,14 +12,24 @@ export const enum ComplaintStatus {
   REOPENED = 'REOPENED',
 }
 
-export class CreateComplaintDto {
-  name: string;
-  type: ComplaintType = ComplaintType.NORMAL;
-  priority = 10;
-  society: string;
-  user: string;
+export enum ComplaintPriority {
+  NORMAL = 'NORMAL',
+  HIGH = 'HIGH',
+  LOW = 'LOW',
 }
 
-export class CreatedComplaintDto extends OmitType(CreateComplaintDto, [
-  '_id',
-]) {}
+export class CreateComplaintDto {
+  name: string;
+  kind: ComplaintKind = ComplaintKind.NORMAL;
+  description: string;
+  priority: ComplaintPriority = ComplaintPriority.NORMAL;
+  society: string;
+  raisedBy: string;
+}
+
+export class CreatedComplaintDto extends CreateComplaintDto {
+  status: string;
+  assignedTo: string;
+}
+
+export class PatchComplaintDto extends PartialType(CreatedComplaintDto) {}

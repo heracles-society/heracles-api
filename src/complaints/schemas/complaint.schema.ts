@@ -1,12 +1,17 @@
 import * as mongoose from 'mongoose';
+import { SOCIETY_MODEL } from '../../societies/constants';
+import { USER_MODEL } from '../../users/constants';
 
 export const ComplaintSchema = new mongoose.Schema(
   {
     name: String,
-    type: String,
+    kind: Number,
+    status: String,
+    description: String,
     priority: Number,
-    organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    society: { type: mongoose.Schema.Types.ObjectId, ref: SOCIETY_MODEL },
+    raisedBy: { type: mongoose.Schema.Types.ObjectId, ref: USER_MODEL },
+    assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: USER_MODEL },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );

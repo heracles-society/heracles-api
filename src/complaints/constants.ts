@@ -1,1 +1,2 @@
-export const COMPLAINTS_MODEL = 'COMPLAINTS_MODEL';
+export const COMPLAINT_MODEL = 'Complaint';
+export const COMPLAINT_PROVIDER = `${COMPLAINT_MODEL.toUpperCase()}_PROVIDER`;

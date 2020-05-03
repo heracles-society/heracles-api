@@ -2,9 +2,11 @@ import { Document } from 'mongoose';
 
 export interface Complaint extends Document {
   name: string;
-  type: string;
+  kind: string;
+  description: string;
   priority: number;
   society: string;
-  user: string;
+  raisedBy: string;
   status: string;
+  assignedTo: string;
 }

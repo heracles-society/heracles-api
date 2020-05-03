@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { SocietiesModule } from './societies/societies.module';
 import { InventoriesModule } from './inventories/inventories.module';
+import { ComplaintsModule } from './complaints/complaints.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { InventoriesModule } from './inventories/inventories.module';
       load: [configuration],
       expandVariables: true,
     }),
+    ComplaintsModule,
     DatabaseModule,
     OrganizationsModule,
     SocietiesModule,
