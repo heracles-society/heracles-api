@@ -1,11 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
 declare const module: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+  });
 
   const options = new DocumentBuilder()
     .setTitle('Heracles API')
@@ -20,6 +23,10 @@ async function bootstrap() {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
-  await app.listen(3000);
+
+  const configService = app.get(ConfigService);
+  const port = configService.get('PORT', 80);
+  console.log(`Listening on port [${port}]...`);
+  await app.listen(port);
 }
 bootstrap();

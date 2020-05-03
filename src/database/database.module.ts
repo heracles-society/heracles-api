@@ -17,6 +17,8 @@ const databaseProviders = [
          * To handle the deprecation warning while using findOneAndUpdate() and findOneAndRemove()
          */
         useFindAndModify: false,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
       });
     },
   },
