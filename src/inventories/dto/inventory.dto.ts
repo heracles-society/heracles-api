@@ -10,4 +10,4 @@ export class CreateInventoryDto {
   manager: string = null;
 }
 
-export class CreatedInventory extends CreateInventoryDto {}
+export class CreatedInventoryDto extends CreateInventoryDto {}

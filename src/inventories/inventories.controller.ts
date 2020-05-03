@@ -8,7 +8,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { InventoryService } from './inventories.service';
-import { CreateInventoryDto, CreatedInventory } from './dto/inventory.dto';
+import { CreateInventoryDto, CreatedInventoryDto } from './dto/inventory.dto';
 import { Inventory } from './interface/inventory.interface';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -21,7 +21,7 @@ export class InventoriesController {
   @Post()
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
-    type: CreatedInventory,
+    type: CreatedInventoryDto,
   })
   async create(
     @Body() createInventoryDto: CreateInventoryDto,
@@ -42,7 +42,7 @@ export class InventoriesController {
 
   @Get()
   @ApiOkResponse({
-    type: [CreatedInventory],
+    type: [CreatedInventoryDto],
   })
   async findAll(): Promise<Inventory[]> {
     return this.inventoryService.findAll();
@@ -50,7 +50,7 @@ export class InventoriesController {
 
   @Get(':id')
   @ApiOkResponse({
-    type: CreatedInventory,
+    type: CreatedInventoryDto,
   })
   async findById(@Param('id') orgId: string): Promise<Inventory> {
     return this.inventoryService.findOne({
