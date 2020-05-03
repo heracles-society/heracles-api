@@ -2,7 +2,11 @@ import { Injectable, Inject } from '@nestjs/common';
 import { COMPLAINT_PROVIDER } from './constants';
 import { Complaint } from './interface/complaint.interface';
 import { Model, Types } from 'mongoose';
-import { CreateComplaintDto, ComplaintStatus } from './dto/complaint.dto';
+import {
+  CreateComplaintDto,
+  ComplaintStatus,
+  PatchComplaintDto,
+} from './dto/complaint.dto';
 import { UserService } from '../users/users.service';
 
 @Injectable()
@@ -30,7 +34,7 @@ export class ComplaintService {
     return null;
   }
 
-  async findOne(params): Promise<Complaint> {
+  async findOne(params: any): Promise<Complaint> {
     return this.complaintModel.findOne(params).exec();
   }
 
@@ -38,11 +42,13 @@ export class ComplaintService {
     return this.complaintModel.find().exec();
   }
 
-  async updateOne(params, updateDoc): Promise<Complaint> {
-    const record = await this.complaintModel.findOneAndUpdate(
-      params,
-      updateDoc,
-    );
+  async updateOne(
+    params: any,
+    updateDoc: PatchComplaintDto,
+  ): Promise<Complaint> {
+    const record = await this.complaintModel.findOneAndUpdate(params, {
+      ...updateDoc,
+    });
     return record;
   }
 }

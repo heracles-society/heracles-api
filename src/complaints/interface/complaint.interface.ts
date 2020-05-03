@@ -4,7 +4,7 @@ export interface Complaint extends Document {
   name: string;
   kind: string;
   description: string;
-  priority: number;
+  priority: string;
   society: string;
   raisedBy: string;
   status: string;

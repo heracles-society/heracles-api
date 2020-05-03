@@ -5,10 +5,10 @@ import { USER_MODEL } from '../../users/constants';
 export const ComplaintSchema = new mongoose.Schema(
   {
     name: String,
-    kind: Number,
+    kind: String,
     status: String,
     description: String,
-    priority: Number,
+    priority: String,
     society: { type: mongoose.Schema.Types.ObjectId, ref: SOCIETY_MODEL },
     raisedBy: { type: mongoose.Schema.Types.ObjectId, ref: USER_MODEL },
     assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: USER_MODEL },

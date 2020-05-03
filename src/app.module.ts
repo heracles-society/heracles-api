@@ -7,6 +7,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { SocietiesModule } from './societies/societies.module';
 import { InventoriesModule } from './inventories/inventories.module';
 import { ComplaintsModule } from './complaints/complaints.module';
+import { ReservationsModule } from './reservations/reservations.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ComplaintsModule } from './complaints/complaints.module';
     SocietiesModule,
     UsersModule,
     InventoriesModule,
+    ReservationsModule,
   ],
   providers: [],
 })
