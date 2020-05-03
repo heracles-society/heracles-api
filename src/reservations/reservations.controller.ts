@@ -51,7 +51,7 @@ export class ReservationsController {
     type: CreatedReservationDto,
   })
   async findById(@Param('id') reservationId: string): Promise<Reservation> {
-    const reservationRecord = this.reservationService.findOne({
+    const reservationRecord = await this.reservationService.findOne({
       _id: new Types.ObjectId(reservationId),
     });
     if (reservationRecord) {
@@ -68,7 +68,7 @@ export class ReservationsController {
     @Param() reservationId: string,
     @Body() patchReservationDto: PatchReservationDto,
   ) {
-    const patchedReservation = this.reservationService.updateOne(
+    const patchedReservation = await this.reservationService.updateOne(
       { _id: new Types.ObjectId(reservationId) },
       patchReservationDto,
     );
