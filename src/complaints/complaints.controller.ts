@@ -15,12 +15,7 @@ import {
   PatchComplaintDto,
 } from './dto/complaint.dto';
 import { Complaint } from './interface/complaint.interface';
-import {
-  ApiTags,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiNotFoundResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
 @ApiTags('complaints')

@@ -4,7 +4,6 @@ import {
   Body,
   Get,
   BadRequestException,
-  ServiceUnavailableException,
   Param,
   NotFoundException,
 } from '@nestjs/common';
