@@ -7,6 +7,7 @@ import {
   Patch,
   BadRequestException,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { EventService } from './events.service';
 import {
@@ -15,14 +16,22 @@ import {
   PatchEventDto,
 } from './dto/event.dto';
 import { Event } from './interface/event.interface';
-import { ApiTags, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('events')
 @Controller('events')
 export class EventsController {
   constructor(private eventService: EventService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
@@ -58,6 +67,8 @@ export class EventsController {
     throw new NotFoundException();
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiOkResponse({
     type: CreatedEventDto,

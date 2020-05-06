@@ -7,8 +7,14 @@ import {
   Param,
   NotFoundException,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { ReservationService } from './reservations.service';
 import {
   CreatedReservationDto,
@@ -17,12 +23,15 @@ import {
 } from './dto/reservation.dto';
 import { Reservation } from './interface/reservation.interface';
 import { Types } from 'mongoose';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('reservations')
 @Controller('reservations')
 export class ReservationsController {
   constructor(private reservationService: ReservationService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
@@ -60,6 +69,8 @@ export class ReservationsController {
     throw new NotFoundException();
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiOkResponse({
     type: CreatedReservationDto,

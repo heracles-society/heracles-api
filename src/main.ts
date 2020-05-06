@@ -25,6 +25,7 @@ async function bootstrap() {
         },
       },
     })
+    .addBearerAuth()
     .setTitle('Heracles API')
     .setDescription('The Heracles API exposes resources over HTTP REST API.')
     .setVersion('1.0')

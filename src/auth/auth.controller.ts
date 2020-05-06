@@ -1,28 +1,40 @@
-import { Controller, UseGuards, Request, Get } from '@nestjs/common';
+import { Controller, UseGuards, Request, Get, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOAuth2 } from '@nestjs/swagger';
+import { ApiOAuth2, ApiTags, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { GoogleBearerGuard } from './auth.guard';
+import { AuthService, AuthJwtToken } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  @ApiOAuth2([
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'openid',
-  ])
+  constructor(private authService: AuthService) {}
+  @ApiExcludeEndpoint()
   @UseGuards(AuthGuard('google'))
   @Get('google/login')
   async login(@Request() req) {
     return req.user;
   }
 
+  @ApiExcludeEndpoint()
+  @UseGuards(AuthGuard('google'))
+  @Get('google/callback')
+  async handleGoogleCallback(@Request() req): Promise<AuthJwtToken> {
+    return this.authService.generateToken(req.user);
+  }
+
+  @ApiTags('google-oauth-2')
+  @UseGuards(GoogleBearerGuard)
   @ApiOAuth2([
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
     'openid',
   ])
-  @UseGuards(AuthGuard('google'))
-  @Get('google/callback')
-  async handleGoogleCallback(@Request() req) {
-    return req.user;
+  @Post('google/token')
+  async handleGoogleBearerToken(@Request() req): Promise<AuthJwtToken> {
+    const accessToken = req.headers.authorization.split('Bearer ')[1];
+    const user = await this.authService.findOrCreateUserFromAccessToken(
+      accessToken,
+    );
+    const authJwtToken = this.authService.generateToken(user);
+    return authJwtToken;
   }
 }

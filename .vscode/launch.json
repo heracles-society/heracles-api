@@ -12,6 +12,7 @@
       "preLaunchTask": "tsc: watch - tsconfig.build.json",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "trace": true,
+      "sourceMaps": true,
       "skipFiles": [
         "${workspaceFolder}/node_modules/**/*.js",
         "<node_internals>/**/*.js"

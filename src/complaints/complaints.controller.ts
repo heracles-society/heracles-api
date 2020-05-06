@@ -7,6 +7,7 @@ import {
   Patch,
   BadRequestException,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { ComplaintService } from './complaints.service';
 import {
@@ -15,14 +16,22 @@ import {
   PatchComplaintDto,
 } from './dto/complaint.dto';
 import { Complaint } from './interface/complaint.interface';
-import { ApiTags, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('complaints')
 @Controller('complaints')
 export class ComplaintsController {
   constructor(private complaintService: ComplaintService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
@@ -60,6 +69,8 @@ export class ComplaintsController {
     throw new NotFoundException();
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @ApiOkResponse({
     type: CreatedComplaintDto,

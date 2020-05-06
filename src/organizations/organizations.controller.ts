@@ -6,6 +6,7 @@ import {
   Param,
   BadRequestException,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { Organization } from './interface/organization.interface';
 import {
@@ -13,14 +14,22 @@ import {
   CreatedOrganization,
 } from './dto/organization.dto';
 import { OrganizationService } from './organizations.service';
-import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('organizations')
 @Controller('organizations')
 export class OrganizationsController {
   constructor(private readonly organizationService: OrganizationService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({
     type: CreatedOrganization,

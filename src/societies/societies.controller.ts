@@ -6,18 +6,27 @@ import {
   BadRequestException,
   Param,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { Society } from './interface/society.interface';
 import { CreateSocietyDto, CreatedSocietyDto } from './dto/society.dto';
 import { SocietyService } from './societies.service';
-import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('societies')
 @Controller('societies')
 export class SocietiesController {
   constructor(private readonly societyService: SocietyService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({
     type: CreatedSocietyDto,

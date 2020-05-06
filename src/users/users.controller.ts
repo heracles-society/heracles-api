@@ -6,18 +6,29 @@ import {
   Param,
   BadRequestException,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto, CreatedUserDto } from './dto/user.dto';
 import { User } from './interface/user.interface';
-import { ApiOkResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiTags,
+  ApiBearerAuth,
+  ApiExcludeEndpoint,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private userService: UserService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiExcludeEndpoint()
   @Post()
   @ApiCreatedResponse({
     type: CreatedUserDto,

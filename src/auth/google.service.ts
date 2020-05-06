@@ -29,6 +29,6 @@ export class GoogleOauth2Strategy extends PassportStrategy(Strategy) {
     refresh, // refresh token from Google
     profile, // user profile, parsed by passport
   ): Promise<any> {
-    return this.authService.validateUser(profile);
+    return this.authService.findOrCreateUserFromAuthProfile(profile._json);
   }
 }

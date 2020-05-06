@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpService } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/users.service';
+import { User } from '../users/interface/user.interface';
 
-interface AuthProfile {
+export interface AuthProfile {
   email: string;
   email_verified: boolean;
   family_name: string;
@@ -12,26 +14,72 @@ interface AuthProfile {
   sub: string;
 }
 
+export interface AuthJwtToken {
+  accessToken: string;
+}
+
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UserService) {}
+  constructor(
+    private usersService: UserService,
+    private jwtService: JwtService,
+    private httpService: HttpService,
+  ) {}
 
-  async validateUser(rawProfile: any): Promise<any> {
-    const authProfile: AuthProfile = rawProfile._json;
-    const email = authProfile.email;
+  async verifyAccessToken(accessToken: string): Promise<boolean> {
+    const isTokenValid = await this.httpService
+      .get(
+        `https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`,
+      )
+      .toPromise()
+      .then(() => true)
+      .catch(() => false);
+
+    return isTokenValid;
+  }
+
+  async getProfileUsingValidAccessToken(
+    accessToken: string,
+  ): Promise<AuthProfile> {
+    const response = await this.httpService
+      .get(
+        `https://openidconnect.googleapis.com/v1/userinfo?access_token=${accessToken}`,
+      )
+      .toPromise();
+    const profile: AuthProfile = response.data;
+    return profile;
+  }
+
+  async findOrCreateUserFromAccessToken(accessToken: string): Promise<User> {
+    const isTokenValid = await this.verifyAccessToken(accessToken);
+    if (isTokenValid) {
+      const authProfile = await this.getProfileUsingValidAccessToken(
+        accessToken,
+      );
+      if (authProfile) {
+        return this.findOrCreateUserFromAuthProfile(authProfile);
+      }
+    }
+    return null;
+  }
+
+  async findOrCreateUserFromAuthProfile(
+    authProfile: AuthProfile,
+  ): Promise<any> {
+    const {
+      email,
+      family_name: familyName,
+      given_name: givenName,
+      name,
+      picture,
+      sub: openId,
+    } = authProfile;
+
     const user = await this.usersService.findOne({
-      email: email,
+      openId: openId,
     });
 
     if (user === null) {
-      const {
-        email,
-        family_name: familyName,
-        given_name: givenName,
-        name,
-        picture,
-        sub: openId,
-      } = authProfile;
       const user = await this.usersService.create({
         email,
         name,
@@ -45,5 +93,12 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async generateToken(user: User): Promise<AuthJwtToken> {
+    const payload = { sub: user.id, email: user.email, scopes: user.roles };
+    return {
+      accessToken: this.jwtService.sign(payload),
+    };
   }
 }

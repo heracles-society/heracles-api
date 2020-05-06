@@ -6,18 +6,27 @@ import {
   BadRequestException,
   Param,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { InventoryService } from './inventories.service';
 import { CreateInventoryDto, CreatedInventoryDto } from './dto/inventory.dto';
 import { Inventory } from './interface/inventory.interface';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Types } from 'mongoose';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @ApiTags('inventories')
 @Controller('inventories')
 export class InventoriesController {
   constructor(private inventoryService: InventoryService) {}
 
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post()
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
