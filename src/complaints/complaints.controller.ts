@@ -65,11 +65,11 @@ export class ComplaintsController {
     type: CreatedComplaintDto,
   })
   async patchById(
-    @Param() complaintId: string,
+    @Param('id') id: string,
     @Body() patchComplaintDto: PatchComplaintDto,
   ) {
     const patchedComplaint = await this.complaintService.updateOne(
-      { _id: new Types.ObjectId(complaintId) },
+      { _id: new Types.ObjectId(id) },
       patchComplaintDto,
     );
 

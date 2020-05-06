@@ -65,7 +65,7 @@ export class ReservationsController {
     type: CreatedReservationDto,
   })
   async patchById(
-    @Param() reservationId: string,
+    @Param('id') reservationId: string,
     @Body() patchReservationDto: PatchReservationDto,
   ) {
     const patchedReservation = await this.reservationService.updateOne(

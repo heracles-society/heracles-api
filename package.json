@@ -25,9 +25,14 @@
     "@nestjs/config": "^0.4.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/mongoose": "^6.4.0",
+    "@nestjs/passport": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
     "@nestjs/swagger": "^4.5.3",
+    "@types/passport-google-oauth20": "^2.0.3",
+    "google-auth-library": "^6.0.0",
     "mongoose": "^5.9.11",
+    "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
@@ -68,7 +73,7 @@
     }
   },
   "lint-staged": {
-    "*.+(js|jsx)": [
+    "*.+(js|jsx|ts)": [
       "eslint --fix --max-warnings=0",
       "prettier --write"
     ],

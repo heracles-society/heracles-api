@@ -1,7 +1,11 @@
 export class CreateUserDto {
   name: string;
-  mobile: string;
   email: string;
+  roles: string[];
+  familyName?: string;
+  givenName?: string;
+  picture?: string;
+  openId?: string;
 }
 
 export class CreatedUserDto extends CreateUserDto {}

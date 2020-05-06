@@ -11,13 +11,27 @@ async function bootstrap() {
   });
 
   const options = new DocumentBuilder()
+    .addOAuth2({
+      type: 'oauth2',
+      flows: {
+        implicit: {
+          scopes: {
+            'https://www.googleapis.com/auth/userinfo.email': 'Email',
+            'https://www.googleapis.com/auth/userinfo.profile': 'Profile',
+            openid: 'OpenID',
+          },
+          authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+          tokenUrl: 'https://www.googleapis.com/oauth2/v4/token',
+        },
+      },
+    })
     .setTitle('Heracles API')
     .setDescription('The Heracles API exposes resources over HTTP REST API.')
     .setVersion('1.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api_docs', app, document);
+  SwaggerModule.setup('/', app, document);
 
   if (module.hot) {
     module.hot.accept();

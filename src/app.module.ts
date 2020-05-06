@@ -9,6 +9,7 @@ import { InventoriesModule } from './inventories/inventories.module';
 import { ComplaintsModule } from './complaints/complaints.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { EventsModule } from './events/events.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { EventsModule } from './events/events.module';
     InventoriesModule,
     ReservationsModule,
     EventsModule,
+    AuthModule,
   ],
   providers: [],
 })

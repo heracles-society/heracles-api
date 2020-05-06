@@ -63,7 +63,7 @@ export class EventsController {
     type: CreatedEventDto,
   })
   async patchById(
-    @Param() eventId: string,
+    @Param('id') eventId: string,
     @Body() patchEventDto: PatchEventDto,
   ) {
     const patchedEvent = await this.eventService.updateOne(
