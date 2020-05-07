@@ -22,6 +22,8 @@ import {
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @ApiTags('organizations')
 @Controller('organizations')
@@ -29,8 +31,9 @@ export class OrganizationsController {
   constructor(private readonly organizationService: OrganizationService) {}
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
+  @Roles('organizations:create')
   @ApiCreatedResponse({
     type: CreatedOrganization,
   })
