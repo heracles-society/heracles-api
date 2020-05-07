@@ -1,7 +1,7 @@
 import { Controller, UseGuards, Request, Get, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOAuth2, ApiTags, ApiExcludeEndpoint } from '@nestjs/swagger';
-import { GoogleBearerGuard } from './auth.guard';
+import { GoogleBearerGuard } from './google.guard';
 import { AuthService, AuthJwtToken } from './auth.service';
 
 @Controller('auth')
