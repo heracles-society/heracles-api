@@ -45,7 +45,7 @@ export class InventoryService {
     return this.inventoryModel.findOne(params).exec();
   }
 
-  async findAll(): Promise<Inventory[]> {
-    return this.inventoryModel.find().exec();
+  async findAll(query: object): Promise<Inventory[]> {
+    return this.inventoryModel.find(query).exec();
   }
 }

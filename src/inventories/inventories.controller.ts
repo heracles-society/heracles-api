@@ -7,23 +7,33 @@ import {
   Param,
   NotFoundException,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { InventoryService } from './inventories.service';
-import { CreateInventoryDto, CreatedInventoryDto } from './dto/inventory.dto';
+import {
+  CreateInventoryDto,
+  CreatedInventoryDto,
+  InventoryType,
+} from './dto/inventory.dto';
 import { Inventory } from './interface/inventory.interface';
 import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-
+import { UtilService } from '../utils/utils.service';
+// import { parseQueryParamFilters } f../utils_oldutils';
 @ApiTags('inventories')
 @Controller('inventories')
 export class InventoriesController {
-  constructor(private inventoryService: InventoryService) {}
+  constructor(
+    private inventoryService: InventoryService,
+    private utilService: UtilService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -46,8 +56,38 @@ export class InventoriesController {
   @ApiOkResponse({
     type: [CreatedInventoryDto],
   })
-  async findAll(): Promise<Inventory[]> {
-    return this.inventoryService.findAll();
+  @ApiQuery({
+    name: 'q',
+    description: 'Query filter',
+    required: false,
+    type: String,
+  })
+  @ApiQuery({
+    name: 'kind',
+    description: 'Inventory kind',
+    required: false,
+    enum: InventoryType,
+    type: String,
+  })
+  async findAll(
+    @Query('kind') inventoryKind: string,
+    @Query('q') queryString: string,
+  ): Promise<any> {
+    const params = {};
+    if (queryString) {
+      const parsedQueryString = await this.utilService.parseQueryParam(
+        queryString,
+      );
+      const finalDBQuery = await this.utilService.parseDBParam(
+        parsedQueryString,
+      );
+      return finalDBQuery;
+    } else {
+      if (inventoryKind) {
+        params['kind'] = inventoryKind;
+      }
+    }
+    return this.inventoryService.findAll(params);
   }
 
   @Get(':id')

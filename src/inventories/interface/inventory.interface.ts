@@ -3,7 +3,7 @@ import { InventoryType } from '../dto/inventory.dto';
 
 export interface Inventory extends Document {
   name: string;
-  type: InventoryType;
+  kind: InventoryType;
   society: string;
   owner: string;
   manager: string;

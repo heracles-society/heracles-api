@@ -1,6 +1,15 @@
 import { Document } from 'mongoose';
 
 export interface Society extends Document {
-  readonly name: string;
-  readonly organization: string;
+  name: string;
+  organization: string;
+  address: string;
+  state: string;
+  highlights: string;
+  happinessIndex: number;
+  safetyIndex: number;
+  area: number;
+  areaUnit: string;
+  latitude: string;
+  longiture: string;
 }

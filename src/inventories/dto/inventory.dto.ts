@@ -4,7 +4,7 @@ export enum InventoryType {
 }
 export class CreateInventoryDto {
   name: string;
-  type: InventoryType = InventoryType['APARTMENT'];
+  kind: InventoryType = InventoryType['APARTMENT'];
   society: string;
   owner: string;
   manager: string = null;

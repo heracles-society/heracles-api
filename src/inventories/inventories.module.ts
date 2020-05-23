@@ -5,9 +5,10 @@ import { inventoryProviders } from './inventories.provider';
 import { DatabaseModule } from '../database/database.module';
 import { SocietiesModule } from '../societies/societies.module';
 import { UsersModule } from '../users/users.module';
+import { UtilsModule } from '../utils/utils.module';
 
 @Module({
-  imports: [DatabaseModule, SocietiesModule, UsersModule],
+  imports: [DatabaseModule, SocietiesModule, UsersModule, UtilsModule],
   controllers: [InventoriesController],
   providers: [InventoryService, ...inventoryProviders],
   exports: [InventoryService],

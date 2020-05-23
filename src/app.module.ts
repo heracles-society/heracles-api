@@ -10,6 +10,7 @@ import { ComplaintsModule } from './complaints/complaints.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.module';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from './auth/auth.module';
     ReservationsModule,
     EventsModule,
     AuthModule,
+    UtilsModule,
   ],
   providers: [],
 })

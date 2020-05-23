@@ -5,7 +5,7 @@ import { USER_MODEL } from '../../users/constants';
 export const InventorySchema = new Schema(
   {
     name: String,
-    type: String,
+    kind: String,
     status: String,
     society: { type: Schema.Types.ObjectId, ref: SOCIETY_MODEL },
     owner: { type: Schema.Types.ObjectId, ref: USER_MODEL },

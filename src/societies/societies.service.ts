@@ -13,13 +13,13 @@ export class SocietyService {
   ) {}
 
   async create(createSocietyDto: CreateSocietyDto): Promise<Society> {
-    const { name, organization } = createSocietyDto;
+    const { organization, ...restProps } = createSocietyDto;
     const organizationRecord = await this.organizationService.findOne({
       _id: new Types.ObjectId(organization),
     });
     if (organizationRecord) {
       const createdSociety = new this.societyModel({
-        name,
+        ...restProps,
         organization: organizationRecord.id,
       });
       return createdSociety.save();
