@@ -25,12 +25,14 @@ export class OrganizationService {
   ): Promise<Organization> {
     const { owners, ...restProps } = createOrganizationDto;
     const ownerRecords = [];
-    owners.map(async owner => {
-      const ownerRecord = await this.userService.findOne({
-        _id: new Types.ObjectId(owner),
-      });
-      ownerRecords.push(ownerRecord);
-    });
+    await Promise.all(
+      owners.map(async owner => {
+        const ownerRecord = await this.userService.findOne({
+          _id: new Types.ObjectId(owner),
+        });
+        ownerRecords.push(ownerRecord);
+      }),
+    );
 
     const hasMissingOwners = owners.some(owner => owner === null);
     if (hasMissingOwners || owners.length === 0) {

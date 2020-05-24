@@ -32,18 +32,22 @@ export class InventoryService {
       _id: new Types.ObjectId(society),
     });
 
-    owners.map(async owner => {
-      const ownerRecord = await this.userService.findOne({
-        _id: new Types.ObjectId(owner),
-      });
-      ownerRecords.push(ownerRecord);
-    });
-    managers.map(async manager => {
-      const managerRecord = await this.userService.findOne({
-        _id: new Types.ObjectId(manager),
-      });
-      managerRecords.push(managerRecord);
-    });
+    await Promise.all(
+      owners.map(async owner => {
+        const ownerRecord = await this.userService.findOne({
+          _id: new Types.ObjectId(owner),
+        });
+        ownerRecords.push(ownerRecord);
+      }),
+    );
+    await Promise.all(
+      managers.map(async manager => {
+        const managerRecord = await this.userService.findOne({
+          _id: new Types.ObjectId(manager),
+        });
+        managerRecords.push(managerRecord);
+      }),
+    );
 
     const hasMissingOwners = owners.some(owner => owner === null);
     const hasMissingManagers = managers.some(manager => manager === null);

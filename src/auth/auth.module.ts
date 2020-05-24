@@ -20,7 +20,7 @@ import { JwtStrategy } from './jwt.strategy';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
         signOptions: {
-          expiresIn: '3h',
+          expiresIn: '720h',
           issuer: 'Heracles API',
         },
       }),

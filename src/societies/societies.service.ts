@@ -28,12 +28,14 @@ export class SocietyService {
     });
 
     const managerRecords = [];
-    managers.map(async manager => {
-      const managerRecord = await this.userService.findOne({
-        _id: new Types.ObjectId(manager),
-      });
-      managerRecords.push(managerRecord);
-    });
+    await Promise.all(
+      managers.map(async manager => {
+        const managerRecord = await this.userService.findOne({
+          _id: new Types.ObjectId(manager),
+        });
+        managerRecords.push(managerRecord);
+      }),
+    );
 
     const hasMissingManagers = managers.some(manager => manager === null);
     if (hasMissingManagers || managers.length === 0) {
