@@ -13,6 +13,7 @@ import { OrganizationsModule } from '../organizations/organizations.module';
 import { UtilsModule } from '../utils/utils.module';
 import { PaginatedAPIMiddleware } from '../utils/pagination.decorators';
 import { InventoriesModule } from '../inventories/inventories.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { InventoriesModule } from '../inventories/inventories.module';
     OrganizationsModule,
     UtilsModule,
     forwardRef(() => InventoriesModule),
+    UsersModule,
   ],
   controllers: [SocietiesController],
   providers: [SocietyService, ...societiesProviders],

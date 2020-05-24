@@ -12,4 +12,5 @@ export interface Society extends Document {
   areaUnit: string;
   latitude: string;
   longiture: string;
+  managers: string[];
 }

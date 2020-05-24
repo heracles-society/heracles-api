@@ -10,6 +10,7 @@ export class CreateSocietyDto {
   areaUnit: string;
   latitude: string;
   longiture: string;
+  managers: string[];
 }
 
 export class CreatedSocietyDto extends CreateSocietyDto {}

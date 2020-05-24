@@ -31,6 +31,12 @@ export class OrganizationService {
       });
       ownerRecords.push(ownerRecord);
     });
+
+    const hasMissingOwners = owners.some(owner => owner === null);
+    if (hasMissingOwners || owners.length === 0) {
+      return null;
+    }
+
     const createdOrganization = new this.organizationModel({
       ...restProps,
       owners: ownerRecords.map(owner => owner.id),

@@ -5,6 +5,7 @@ import { SOCIETY_PROVIDER } from './constants';
 import { Model, Types } from 'mongoose';
 import { OrganizationService } from '../organizations/organizations.service';
 import { isArray } from 'util';
+import { UserService } from '../users/users.service';
 
 interface PaginatedSociety {
   data: Society[];
@@ -17,17 +18,33 @@ export class SocietyService {
   constructor(
     @Inject(SOCIETY_PROVIDER) private readonly societyModel: Model<Society>,
     private readonly organizationService: OrganizationService,
+    private readonly userService: UserService,
   ) {}
 
   async create(createSocietyDto: CreateSocietyDto): Promise<Society> {
-    const { organization, ...restProps } = createSocietyDto;
+    const { organization, managers, ...restProps } = createSocietyDto;
     const organizationRecord = await this.organizationService.findOne({
       _id: new Types.ObjectId(organization),
     });
+
+    const managerRecords = [];
+    managers.map(async manager => {
+      const managerRecord = await this.userService.findOne({
+        _id: new Types.ObjectId(manager),
+      });
+      managerRecords.push(managerRecord);
+    });
+
+    const hasMissingManagers = managers.some(manager => manager === null);
+    if (hasMissingManagers || managers.length === 0) {
+      return null;
+    }
+
     if (organizationRecord) {
       const createdSociety = new this.societyModel({
         ...restProps,
         organization: organizationRecord.id,
+        managers: managerRecords.map(managerRecord => managerRecord.id),
       });
       return createdSociety.save();
     }
