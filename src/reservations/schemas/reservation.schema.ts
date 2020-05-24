@@ -4,6 +4,7 @@ import { USER_MODEL } from '../../users/constants';
 
 export const ReservationSchema = new Schema(
   {
+    kind: String,
     inventory: { type: Types.ObjectId, ref: INVENTORY_MODEL },
     fromDate: Date,
     toDate: Date,

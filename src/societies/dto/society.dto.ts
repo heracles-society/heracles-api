@@ -9,7 +9,7 @@ export class CreateSocietyDto {
   area: number;
   areaUnit: string;
   latitude: string;
-  longiture: string;
+  longitude: string;
   managers: string[];
 }
 

@@ -4,7 +4,13 @@ export enum ReservationStatus {
   DENIED = 'DENIED',
 }
 
+export enum ReservationKind {
+  NORMAL = 'NORMAL',
+  LEASE = 'LEASE',
+}
+
 export class CreateReservationDto {
+  kind = ReservationKind.NORMAL;
   inventory: string;
   fromDate: Date;
   toDate: Date;

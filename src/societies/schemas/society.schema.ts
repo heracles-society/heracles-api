@@ -17,7 +17,7 @@ export const SocietySchema = new mongoose.Schema(
     area: Number,
     areaUnit: String,
     latitude: String,
-    longiture: String,
+    longitude: String,
     managers: [{ type: mongoose.Schema.Types.ObjectId, ref: USER_MODEL }],
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
