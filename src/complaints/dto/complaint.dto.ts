@@ -19,7 +19,6 @@ export enum ComplaintPriority {
 }
 
 export class CreateComplaintDto {
-  name: string;
   kind: ComplaintKind = ComplaintKind.NORMAL;
   description: string;
   priority: ComplaintPriority = ComplaintPriority.NORMAL;

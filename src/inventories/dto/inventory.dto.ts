@@ -6,8 +6,8 @@ export class CreateInventoryDto {
   name: string;
   kind: InventoryType = InventoryType['APARTMENT'];
   society: string;
-  owner: string;
-  manager: string = null;
+  owners: string[];
+  managers: string[] = [];
 }
 
 export class CreatedInventoryDto extends CreateInventoryDto {}

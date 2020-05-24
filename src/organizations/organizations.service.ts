@@ -1,9 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ORGANIZATION_PROVIDER } from './constants';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Organization } from './interface/organization.interface';
 import { CreateOrganizationDto } from './dto/organization.dto';
 import { isArray } from 'util';
+import { UserService } from '../users/users.service';
 
 interface PaginatedOrganization {
   data: Organization[];
@@ -16,14 +17,24 @@ export class OrganizationService {
   constructor(
     @Inject(ORGANIZATION_PROVIDER)
     private readonly organizationModel: Model<Organization>,
+    private readonly userService: UserService,
   ) {}
 
   async create(
     createOrganizationDto: CreateOrganizationDto,
   ): Promise<Organization> {
-    const createdOrganization = new this.organizationModel(
-      createOrganizationDto,
-    );
+    const { owners, ...restProps } = createOrganizationDto;
+    const ownerRecords = [];
+    owners.map(async owner => {
+      const ownerRecord = await this.userService.findOne({
+        _id: new Types.ObjectId(owner),
+      });
+      ownerRecords.push(ownerRecord);
+    });
+    const createdOrganization = new this.organizationModel({
+      ...restProps,
+      owners: ownerRecords.map(owner => owner.id),
+    });
     return createdOrganization.save();
   }
 

@@ -8,8 +8,9 @@ export const InventorySchema = new Schema(
     kind: String,
     status: String,
     society: { type: Schema.Types.ObjectId, ref: SOCIETY_MODEL },
-    owner: { type: Schema.Types.ObjectId, ref: USER_MODEL },
-    manager: { type: Schema.Types.ObjectId, ref: USER_MODEL },
+    owners: [{ type: Schema.Types.ObjectId, ref: USER_MODEL }],
+    managers: [{ type: Schema.Types.ObjectId, ref: USER_MODEL }],
+    details: { type: Object, default: {} },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

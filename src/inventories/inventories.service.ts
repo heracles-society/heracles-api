@@ -23,29 +23,47 @@ export class InventoryService {
   ) {}
 
   async create(createInventoryDto: CreateInventoryDto): Promise<Inventory> {
-    const { society, owner, manager, ...restProps } = createInventoryDto;
+    const { society, owners, managers, ...restProps } = createInventoryDto;
+
+    const ownerRecords = [];
+    const managerRecords = [];
+
     const societyRecord = await this.societyService.findOne({
       _id: new Types.ObjectId(society),
     });
-    const ownerRecord = await this.userService.findOne({
-      _id: new Types.ObjectId(owner),
+
+    owners.map(async owner => {
+      const ownerRecord = await this.userService.findOne({
+        _id: new Types.ObjectId(owner),
+      });
+      ownerRecords.push(ownerRecord);
     });
-    let managerRecord = null;
-    if (manager) {
-      managerRecord = await this.userService.findOne({
+    managers.map(async manager => {
+      const managerRecord = await this.userService.findOne({
         _id: new Types.ObjectId(manager),
       });
+      managerRecords.push(managerRecord);
+    });
+
+    const hasMissingOwners = owners.some(owner => owner === null);
+    const hasMissingManagers = managers.some(manager => manager === null);
+
+    if (hasMissingManagers || hasMissingOwners) {
+      return null;
     }
-    if (societyRecord && owner && (manager ? managerRecord : true)) {
-      const createdInventory = new this.inventoryModel({
-        ...restProps,
-        society: societyRecord.id,
-        owner: ownerRecord.id,
-        manager: manager ? managerRecord.id : null,
-      });
-      return createdInventory.save();
+
+    if (owners.length === 0) {
+      return null;
     }
-    return null;
+
+    const createdInventory = new this.inventoryModel({
+      ...restProps,
+      society: societyRecord.id,
+      owners: ownerRecords.map(owner => owner.id),
+      managers: managerRecords.map(manager => manager.id),
+    });
+
+    return createdInventory.save();
   }
 
   async findOne(params): Promise<Inventory> {

@@ -5,6 +5,6 @@ export interface Inventory extends Document {
   name: string;
   kind: InventoryType;
   society: string;
-  owner: string;
-  manager: string;
+  owners: string[];
+  managers: string[];
 }

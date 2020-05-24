@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import { ORGANIZATION_MODEL } from '../../organizations/constants';
+import { USER_MODEL } from '../../users/constants';
 
 export const SocietySchema = new mongoose.Schema(
   {
@@ -17,6 +18,7 @@ export const SocietySchema = new mongoose.Schema(
     areaUnit: String,
     latitude: String,
     longiture: String,
+    managers: [{ type: mongoose.Schema.Types.ObjectId, ref: USER_MODEL }],
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

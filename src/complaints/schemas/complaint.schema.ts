@@ -4,7 +4,6 @@ import { USER_MODEL } from '../../users/constants';
 
 export const ComplaintSchema = new mongoose.Schema(
   {
-    name: String,
     kind: String,
     status: String,
     description: String,

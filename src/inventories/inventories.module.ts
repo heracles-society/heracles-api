@@ -1,4 +1,9 @@
-import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import {
+  Module,
+  MiddlewareConsumer,
+  RequestMethod,
+  forwardRef,
+} from '@nestjs/common';
 import { InventoriesController } from './inventories.controller';
 import { InventoryService } from './inventories.service';
 import { inventoryProviders } from './inventories.provider';
@@ -9,7 +14,12 @@ import { UtilsModule } from '../utils/utils.module';
 import { PaginatedAPIMiddleware } from '../utils/pagination.decorators';
 
 @Module({
-  imports: [DatabaseModule, SocietiesModule, UsersModule, UtilsModule],
+  imports: [
+    DatabaseModule,
+    forwardRef(() => SocietiesModule),
+    UsersModule,
+    UtilsModule,
+  ],
   controllers: [InventoriesController],
   providers: [InventoryService, ...inventoryProviders],
   exports: [InventoryService],

@@ -5,9 +5,10 @@ import { organizationsProviders } from './organizations.provider';
 import { DatabaseModule } from '../database/database.module';
 import { UtilsModule } from '../utils/utils.module';
 import { PaginatedAPIMiddleware } from '../utils/pagination.decorators';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [DatabaseModule, UtilsModule],
+  imports: [DatabaseModule, UtilsModule, UsersModule],
   controllers: [OrganizationsController],
   providers: [OrganizationService, ...organizationsProviders],
   exports: [OrganizationService],

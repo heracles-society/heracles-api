@@ -40,6 +40,7 @@ export interface QueryParamFilter {
  * @returns {QueryParamFilter}
  */
 export const parseQueryParamFilters = (query: string): QueryParamFilter => {
+  query = query ?? '';
   const matches = query.match(/(\([^)]+\))/g);
   const orQueries = [];
   matches?.forEach(match => {
