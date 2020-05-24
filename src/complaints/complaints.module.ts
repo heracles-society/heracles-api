@@ -4,9 +4,10 @@ import { ComplaintService } from './complaints.service';
 import { complaintProviders } from './complaints.provider';
 import { DatabaseModule } from '../database/database.module';
 import { UsersModule } from '../users/users.module';
+import { UtilsModule } from '../utils/utils.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule],
+  imports: [DatabaseModule, UsersModule, UtilsModule],
   controllers: [ComplaintsController],
   providers: [ComplaintService, ...complaintProviders],
 })

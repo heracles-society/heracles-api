@@ -8,12 +8,15 @@ import {
   NotFoundException,
   Patch,
   UseGuards,
+  Query,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { ReservationService } from './reservations.service';
 import {
@@ -24,11 +27,16 @@ import {
 import { Reservation } from './interface/reservation.interface';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { UtilService } from '../utils/utils.service';
+import { PaginatedAPIParams } from '../utils/pagination.decorators';
 
 @ApiTags('reservations')
 @Controller('reservations')
 export class ReservationsController {
-  constructor(private reservationService: ReservationService) {}
+  constructor(
+    private reservationService: ReservationService,
+    private utilService: UtilService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -51,8 +59,35 @@ export class ReservationsController {
   @ApiOkResponse({
     type: [CreatedReservationDto],
   })
-  async findAll(): Promise<Reservation[]> {
-    return this.reservationService.findAll();
+  @ApiQuery({
+    name: 'q',
+    description: 'Query filter',
+    required: false,
+    type: String,
+  })
+  @PaginatedAPIParams
+  async findAll(@Query() query: any, @Req() req): Promise<Reservation[]> {
+    const queryString: string = query.q;
+    const { skip, limit, cursor } = query;
+    let params = {};
+    if (queryString) {
+      const parsedQueryString = await this.utilService.parseQueryParam(
+        queryString,
+      );
+      const finalDBQuery = await this.utilService.parseDBParam(
+        parsedQueryString,
+      );
+      params = finalDBQuery;
+    }
+
+    const {
+      total,
+      data,
+      cursor: newCursor,
+    } = await this.reservationService.findAll(params, { skip, limit, cursor });
+    req.res.set('HERACLES-API-Total-Count', total);
+    req.res.set('HERACLES-API-Cursor', newCursor);
+    return data;
   }
 
   @Get(':id')

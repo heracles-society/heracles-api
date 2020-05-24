@@ -8,6 +8,8 @@ import {
   BadRequestException,
   NotFoundException,
   UseGuards,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { ComplaintService } from './complaints.service';
 import {
@@ -21,14 +23,20 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { PaginatedAPIParams } from '../utils/pagination.decorators';
+import { UtilService } from '../utils/utils.service';
 
 @ApiTags('complaints')
 @Controller('complaints')
 export class ComplaintsController {
-  constructor(private complaintService: ComplaintService) {}
+  constructor(
+    private complaintService: ComplaintService,
+    private utilService: UtilService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -51,8 +59,35 @@ export class ComplaintsController {
   @ApiOkResponse({
     type: [CreatedComplaintDto],
   })
-  async findAll(): Promise<Complaint[]> {
-    return this.complaintService.findAll();
+  @ApiQuery({
+    name: 'q',
+    description: 'Query filter',
+    required: false,
+    type: String,
+  })
+  @PaginatedAPIParams
+  async findAll(@Query() query: any, @Req() req): Promise<Complaint[]> {
+    const queryString: string = query.q;
+    const { skip, limit, cursor } = query;
+    let params = {};
+    if (queryString) {
+      const parsedQueryString = await this.utilService.parseQueryParam(
+        queryString,
+      );
+      const finalDBQuery = await this.utilService.parseDBParam(
+        parsedQueryString,
+      );
+      params = finalDBQuery;
+    }
+
+    const {
+      total,
+      data,
+      cursor: newCursor,
+    } = await this.complaintService.findAll(params, { skip, limit, cursor });
+    req.res.set('HERACLES-API-Total-Count', total);
+    req.res.set('HERACLES-API-Cursor', newCursor);
+    return data;
   }
 
   @Get(':id')

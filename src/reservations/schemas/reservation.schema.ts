@@ -10,5 +10,5 @@ export const ReservationSchema = new Schema(
     reservedBy: { type: Types.ObjectId, ref: USER_MODEL },
     status: String,
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

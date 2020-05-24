@@ -6,6 +6,13 @@ import { CreateEventDto, EventStatus, PatchEventDto } from './dto/event.dto';
 import { UserService } from '../users/users.service';
 import { ReservationService } from '../reservations/reservations.service';
 import { Reservation } from '../reservations/interface/reservation.interface';
+import { isArray } from 'util';
+
+interface PaginatedEvent {
+  data: Event[];
+  total: number;
+  cursor: Date;
+}
 
 @Injectable()
 export class EventService {
@@ -44,8 +51,39 @@ export class EventService {
     return this.eventModel.findOne(params).exec();
   }
 
-  async findAll(): Promise<Event[]> {
-    return this.eventModel.find().exec();
+  async findAll(
+    query: object,
+    options = { skip: 0, limit: 25, cursor: null },
+  ): Promise<PaginatedEvent> {
+    const { skip, limit, cursor } = options;
+    let updatedQuery = {};
+    if (cursor) {
+      if (isArray(query['$and'])) {
+        updatedQuery['$and'] = [
+          { createdAt: { $gt: cursor } },
+          ...query['$and'],
+        ];
+      } else {
+        updatedQuery['$and'] = [{ createdAt: { $gt: cursor } }, query];
+      }
+    } else {
+      updatedQuery = query;
+    }
+
+    const data = await this.eventModel
+      .find(updatedQuery)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    const count = await this.eventModel.countDocuments(updatedQuery).exec();
+    const cursorId = data.length
+      ? data[data.length - 1]['createdAt'].getTime()
+      : null;
+    return {
+      total: count,
+      data: data,
+      cursor: cursorId,
+    };
   }
 
   async updateOne(params: any, updateDoc: PatchEventDto): Promise<Event> {

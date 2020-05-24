@@ -7,6 +7,8 @@ import {
   Param,
   NotFoundException,
   UseGuards,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { Society } from './interface/society.interface';
 import { CreateSocietyDto, CreatedSocietyDto } from './dto/society.dto';
@@ -16,14 +18,20 @@ import {
   ApiCreatedResponse,
   ApiTags,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { UtilService } from '../utils/utils.service';
+import { PaginatedAPIParams } from '../utils/pagination.decorators';
 
 @ApiTags('societies')
 @Controller('societies')
 export class SocietiesController {
-  constructor(private readonly societyService: SocietyService) {}
+  constructor(
+    private readonly societyService: SocietyService,
+    private utilService: UtilService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -43,8 +51,35 @@ export class SocietiesController {
   @ApiOkResponse({
     type: [CreatedSocietyDto],
   })
-  async findAll(): Promise<Society[]> {
-    return this.societyService.findAll();
+  @ApiQuery({
+    name: 'q',
+    description: 'Query filter',
+    required: false,
+    type: String,
+  })
+  @PaginatedAPIParams
+  async findAll(@Query() query: any, @Req() req): Promise<Society[]> {
+    const queryString: string = query.q;
+    const { skip, limit, cursor } = query;
+    let params = {};
+    if (queryString) {
+      const parsedQueryString = await this.utilService.parseQueryParam(
+        queryString,
+      );
+      const finalDBQuery = await this.utilService.parseDBParam(
+        parsedQueryString,
+      );
+      params = finalDBQuery;
+    }
+
+    const {
+      total,
+      data,
+      cursor: newCursor,
+    } = await this.societyService.findAll(params, { skip, limit, cursor });
+    req.res.set('HERACLES-API-Total-Count', total);
+    req.res.set('HERACLES-API-Cursor', newCursor);
+    return data;
   }
 
   @Get(':id')

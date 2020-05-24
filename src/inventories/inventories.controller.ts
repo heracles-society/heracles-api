@@ -8,6 +8,7 @@ import {
   NotFoundException,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { InventoryService } from './inventories.service';
 import {
@@ -26,7 +27,8 @@ import {
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { UtilService } from '../utils/utils.service';
-// import { parseQueryParamFilters } f../utils_oldutils';
+import { PaginatedAPIParams } from '../utils/pagination.decorators';
+
 @ApiTags('inventories')
 @Controller('inventories')
 export class InventoriesController {
@@ -69,11 +71,12 @@ export class InventoriesController {
     enum: InventoryType,
     type: String,
   })
-  async findAll(
-    @Query('kind') inventoryKind: string,
-    @Query('q') queryString: string,
-  ): Promise<any> {
-    const params = {};
+  @PaginatedAPIParams
+  async findAll(@Query() query: any, @Req() req): Promise<Inventory[]> {
+    const inventoryKind: string = query.kind;
+    const queryString: string = query.q;
+    const { skip, limit, cursor } = query;
+    let params = {};
     if (queryString) {
       const parsedQueryString = await this.utilService.parseQueryParam(
         queryString,
@@ -81,13 +84,20 @@ export class InventoriesController {
       const finalDBQuery = await this.utilService.parseDBParam(
         parsedQueryString,
       );
-      return finalDBQuery;
+      params = finalDBQuery;
     } else {
       if (inventoryKind) {
         params['kind'] = inventoryKind;
       }
     }
-    return this.inventoryService.findAll(params);
+    const {
+      total,
+      data,
+      cursor: newCursor,
+    } = await this.inventoryService.findAll(params, { skip, limit, cursor });
+    req.res.set('HERACLES-API-Total-Count', total);
+    req.res.set('HERACLES-API-Cursor', newCursor);
+    return data;
   }
 
   @Get(':id')

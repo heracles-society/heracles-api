@@ -18,5 +18,5 @@ export const SocietySchema = new mongoose.Schema(
     latitude: String,
     longiture: String,
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

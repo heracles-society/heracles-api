@@ -43,6 +43,14 @@ const getDBQuery = (key: string, value: any) => {
       $regex: value,
     };
   }
+  if (key.endsWith('__iregex')) {
+    const lastIndex = key.lastIndexOf('__iregex');
+    dbParam = key.slice(0, lastIndex);
+    dbValue = {
+      $regex: value,
+      $options: 'i',
+    };
+  }
   if (key.endsWith('__exists')) {
     const lastIndex = key.lastIndexOf('__exists');
     dbParam = key.slice(0, lastIndex);

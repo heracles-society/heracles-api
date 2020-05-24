@@ -10,5 +10,5 @@ export const UserSchema = new mongoose.Schema(
     picture: String,
     openId: String,
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

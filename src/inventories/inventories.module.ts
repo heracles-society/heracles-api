@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { InventoriesController } from './inventories.controller';
 import { InventoryService } from './inventories.service';
 import { inventoryProviders } from './inventories.provider';
@@ -6,6 +6,7 @@ import { DatabaseModule } from '../database/database.module';
 import { SocietiesModule } from '../societies/societies.module';
 import { UsersModule } from '../users/users.module';
 import { UtilsModule } from '../utils/utils.module';
+import { PaginatedAPIMiddleware } from '../utils/pagination.decorators';
 
 @Module({
   imports: [DatabaseModule, SocietiesModule, UsersModule, UtilsModule],
@@ -13,4 +14,11 @@ import { UtilsModule } from '../utils/utils.module';
   providers: [InventoryService, ...inventoryProviders],
   exports: [InventoryService],
 })
-export class InventoriesModule {}
+export class InventoriesModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(PaginatedAPIMiddleware).forRoutes({
+      method: RequestMethod.GET,
+      path: '/inventories',
+    });
+  }
+}

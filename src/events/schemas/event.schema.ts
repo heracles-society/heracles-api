@@ -10,5 +10,5 @@ export const EventSchema = new mongoose.Schema(
       ref: RESERVATION_MODEL,
     },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

@@ -8,6 +8,13 @@ import {
 } from './dto/reservation.dto';
 import { InventoryService } from '../inventories/inventories.service';
 import { UserService } from '../users/users.service';
+import { isArray } from 'util';
+
+interface PaginatedReservation {
+  data: Reservation[];
+  total: number;
+  cursor: Date;
+}
 
 @Injectable()
 export class ReservationService {
@@ -59,8 +66,41 @@ export class ReservationService {
     return this.reservationModel.findOne(params).exec();
   }
 
-  async findAll(): Promise<Reservation[]> {
-    return this.reservationModel.find().exec();
+  async findAll(
+    query: object,
+    options = { skip: 0, limit: 25, cursor: null },
+  ): Promise<PaginatedReservation> {
+    const { skip, limit, cursor } = options;
+    let updatedQuery = {};
+    if (cursor) {
+      if (isArray(query['$and'])) {
+        updatedQuery['$and'] = [
+          { createdAt: { $gt: cursor } },
+          ...query['$and'],
+        ];
+      } else {
+        updatedQuery['$and'] = [{ createdAt: { $gt: cursor } }, query];
+      }
+    } else {
+      updatedQuery = query;
+    }
+
+    const data = await this.reservationModel
+      .find(updatedQuery)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    const count = await this.reservationModel
+      .countDocuments(updatedQuery)
+      .exec();
+    const cursorId = data.length
+      ? data[data.length - 1]['createdAt'].getTime()
+      : null;
+    return {
+      total: count,
+      data: data,
+      cursor: cursorId,
+    };
   }
 
   async updateOne(

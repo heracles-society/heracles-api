@@ -11,5 +11,5 @@ export const InventorySchema = new Schema(
     owner: { type: Schema.Types.ObjectId, ref: USER_MODEL },
     manager: { type: Schema.Types.ObjectId, ref: USER_MODEL },
   },
-  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
+  { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

@@ -4,6 +4,13 @@ import { Society } from './interface/society.interface';
 import { SOCIETY_PROVIDER } from './constants';
 import { Model, Types } from 'mongoose';
 import { OrganizationService } from '../organizations/organizations.service';
+import { isArray } from 'util';
+
+interface PaginatedSociety {
+  data: Society[];
+  total: number;
+  cursor: Date;
+}
 
 @Injectable()
 export class SocietyService {
@@ -31,7 +38,38 @@ export class SocietyService {
     return this.societyModel.findOne(params).exec();
   }
 
-  async findAll(): Promise<Society[]> {
-    return this.societyModel.find().exec();
+  async findAll(
+    query: object,
+    options = { skip: 0, limit: 25, cursor: null },
+  ): Promise<PaginatedSociety> {
+    const { skip, limit, cursor } = options;
+    let updatedQuery = {};
+    if (cursor) {
+      if (isArray(query['$and'])) {
+        updatedQuery['$and'] = [
+          { createdAt: { $gt: cursor } },
+          ...query['$and'],
+        ];
+      } else {
+        updatedQuery['$and'] = [{ createdAt: { $gt: cursor } }, query];
+      }
+    } else {
+      updatedQuery = query;
+    }
+
+    const data = await this.societyModel
+      .find(updatedQuery)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    const count = await this.societyModel.countDocuments(updatedQuery).exec();
+    const cursorId = data.length
+      ? data[data.length - 1]['createdAt'].getTime()
+      : null;
+    return {
+      total: count,
+      data: data,
+      cursor: cursorId,
+    };
   }
 }

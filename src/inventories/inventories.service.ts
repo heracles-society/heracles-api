@@ -5,6 +5,13 @@ import { Inventory } from './interface/inventory.interface';
 import { CreateInventoryDto } from './dto/inventory.dto';
 import { SocietyService } from '../societies/societies.service';
 import { UserService } from '../users/users.service';
+import { isArray } from 'util';
+
+interface PaginatedInventory {
+  data: Inventory[];
+  total: number;
+  cursor: Date;
+}
 
 @Injectable()
 export class InventoryService {
@@ -45,7 +52,38 @@ export class InventoryService {
     return this.inventoryModel.findOne(params).exec();
   }
 
-  async findAll(query: object): Promise<Inventory[]> {
-    return this.inventoryModel.find(query).exec();
+  async findAll(
+    query: object,
+    options = { skip: 0, limit: 25, cursor: null },
+  ): Promise<PaginatedInventory> {
+    const { skip, limit, cursor } = options;
+    let updatedQuery = {};
+    if (cursor) {
+      if (isArray(query['$and'])) {
+        updatedQuery['$and'] = [
+          { createdAt: { $gt: cursor } },
+          ...query['$and'],
+        ];
+      } else {
+        updatedQuery['$and'] = [{ createdAt: { $gt: cursor } }, query];
+      }
+    } else {
+      updatedQuery = query;
+    }
+
+    const data = await this.inventoryModel
+      .find(updatedQuery)
+      .skip(skip)
+      .limit(limit)
+      .exec();
+    const count = await this.inventoryModel.countDocuments(updatedQuery).exec();
+    const cursorId = data.length
+      ? data[data.length - 1]['createdAt'].getTime()
+      : null;
+    return {
+      total: count,
+      data: data,
+      cursor: cursorId,
+    };
   }
 }

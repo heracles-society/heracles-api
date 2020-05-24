@@ -8,6 +8,8 @@ import {
   BadRequestException,
   NotFoundException,
   UseGuards,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { EventService } from './events.service';
 import {
@@ -21,14 +23,20 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { PaginatedAPIParams } from '../utils/pagination.decorators';
+import { UtilService } from '../utils/utils.service';
 
 @ApiTags('events')
 @Controller('events')
 export class EventsController {
-  constructor(private eventService: EventService) {}
+  constructor(
+    private eventService: EventService,
+    private utilService: UtilService,
+  ) {}
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -49,8 +57,35 @@ export class EventsController {
   @ApiOkResponse({
     type: [CreatedEventDto],
   })
-  async findAll(): Promise<Event[]> {
-    return this.eventService.findAll();
+  @ApiQuery({
+    name: 'q',
+    description: 'Query filter',
+    required: false,
+    type: String,
+  })
+  @PaginatedAPIParams
+  async findAll(@Query() query: any, @Req() req): Promise<Event[]> {
+    const queryString: string = query.q;
+    const { skip, limit, cursor } = query;
+    let params = {};
+    if (queryString) {
+      const parsedQueryString = await this.utilService.parseQueryParam(
+        queryString,
+      );
+      const finalDBQuery = await this.utilService.parseDBParam(
+        parsedQueryString,
+      );
+      params = finalDBQuery;
+    }
+
+    const {
+      total,
+      data,
+      cursor: newCursor,
+    } = await this.eventService.findAll(params, { skip, limit, cursor });
+    req.res.set('HERACLES-API-Total-Count', total);
+    req.res.set('HERACLES-API-Cursor', newCursor);
+    return data;
   }
 
   @Get(':id')
