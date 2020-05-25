@@ -37,7 +37,7 @@ export class SocietyService {
       }),
     );
 
-    const hasMissingManagers = managers.some(manager => manager === null);
+    const hasMissingManagers = managerRecords.some(manager => manager === null);
     if (hasMissingManagers || managers.length === 0) {
       return null;
     }

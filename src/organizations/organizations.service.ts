@@ -34,7 +34,7 @@ export class OrganizationService {
       }),
     );
 
-    const hasMissingOwners = owners.some(owner => owner === null);
+    const hasMissingOwners = ownerRecords.some(owner => owner === null);
     if (hasMissingOwners || owners.length === 0) {
       return null;
     }

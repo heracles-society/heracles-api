@@ -49,8 +49,8 @@ export class InventoryService {
       }),
     );
 
-    const hasMissingOwners = owners.some(owner => owner === null);
-    const hasMissingManagers = managers.some(manager => manager === null);
+    const hasMissingOwners = ownerRecords.some(owner => owner === null);
+    const hasMissingManagers = managerRecords.some(manager => manager === null);
 
     if (hasMissingManagers || hasMissingOwners) {
       return null;
