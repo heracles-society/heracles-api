@@ -1,5 +1,5 @@
 import { Module, HttpModule } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
@@ -17,13 +17,18 @@ import { JwtStrategy } from './jwt.strategy';
     ConfigModule.forFeature(googleConfig),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
-        signOptions: {
-          expiresIn: '3h',
-          issuer: 'Heracles API',
-        },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const options: JwtModuleOptions = {
+          privateKey: configService.get('JWT_PRIVATE_KEY'),
+          publicKey: configService.get('JWT_PUBLIC_KEY'),
+          signOptions: {
+            expiresIn: '3h',
+            issuer: 'Heracles API',
+            algorithm: 'RS256',
+          },
+        };
+        return options;
+      },
       inject: [ConfigService],
     }),
   ],
