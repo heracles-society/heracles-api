@@ -11,6 +11,7 @@ import { ReservationsModule } from './reservations/reservations.module';
 import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UtilsModule } from './utils/utils.module';
     EventsModule,
     AuthModule,
     UtilsModule,
+    MessagesModule,
   ],
   providers: [],
 })
