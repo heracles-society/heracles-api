@@ -17,7 +17,7 @@ import { PaginatedAPIMiddleware } from '../utils/pagination.decorators';
   imports: [
     DatabaseModule,
     forwardRef(() => SocietiesModule),
-    UsersModule,
+    forwardRef(() => UsersModule),
     UtilsModule,
   ],
   controllers: [InventoriesController],

@@ -21,7 +21,7 @@ import { UsersModule } from '../users/users.module';
     OrganizationsModule,
     UtilsModule,
     forwardRef(() => InventoriesModule),
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   controllers: [SocietiesController],
   providers: [SocietyService, ...societiesProviders],
