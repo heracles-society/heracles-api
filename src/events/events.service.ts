@@ -4,8 +4,8 @@ import { Event } from './interface/event.interface';
 import { Model, Types } from 'mongoose';
 import { CreateEventDto, EventStatus, PatchEventDto } from './dto/event.dto';
 import { UserService } from '../users/users.service';
-import { ReservationService } from '../reservations/reservations.service';
-import { Reservation } from '../reservations/interface/reservation.interface';
+import { SocietyService } from '../societies/societies.service';
+import { Society } from '../societies/interface/society.interface';
 import { isArray } from 'util';
 
 interface PaginatedEvent {
@@ -20,31 +20,31 @@ export class EventService {
     @Inject(EVENT_PROVIDER)
     private readonly eventModel: Model<Event>,
     private readonly userService: UserService,
-    private readonly reservationService: ReservationService,
+    private readonly society: SocietyService,
   ) {}
 
   async create(createEventDto: CreateEventDto): Promise<Event> {
-    const { createdBy, reservation, ...restProps } = createEventDto;
-    const createdByRecord = await this.userService.findOne({
+    const { createdBy, society, ...restProps } = createEventDto;
+    const user = await this.userService.findOne({
       _id: new Types.ObjectId(createdBy),
     });
 
-    let reservationRecord;
-    if (reservation) {
-      reservationRecord = await this.reservationService.findOne({
-        _id: new Types.ObjectId(createdBy),
-      });
+    const societyRecord = await this.society.findOne({
+      _id: new Types.ObjectId(society),
+    });
+
+    if (!societyRecord || !user) {
+      return null;
     }
 
-    if (createdByRecord) {
-      const createdEvent = new this.eventModel({
-        ...restProps,
-        status: EventStatus.PENDING,
-        reservation: reservationRecord ? reservationRecord.id : null,
-      });
-      return createdEvent.save();
-    }
-    return null;
+    const createdEvent = new this.eventModel({
+      ...restProps,
+      status: EventStatus.PENDING,
+      society: societyRecord.id,
+      createdBy: user.id,
+    });
+
+    return createdEvent.save();
   }
 
   async findOne(params: any): Promise<Event> {
@@ -87,18 +87,18 @@ export class EventService {
   }
 
   async updateOne(params: any, updateDoc: PatchEventDto): Promise<Event> {
-    const { reservation, ...restProps } = updateDoc;
-    let reservationRecord: Reservation;
-    if (reservation) {
-      reservationRecord = await this.reservationService.findOne({
-        _id: new Types.ObjectId(reservation),
+    const { society, ...restProps } = updateDoc;
+    let societyRecord: Society;
+    if (society) {
+      societyRecord = await this.society.findOne({
+        _id: new Types.ObjectId(society),
       });
     }
 
-    if (reservation ? reservationRecord : true) {
+    if (society ? societyRecord : true) {
       const record = await this.eventModel.findOneAndUpdate(params, {
         ...restProps,
-        reservation: reservation ? reservationRecord.id : null,
+        society: society ? societyRecord.id : null,
       });
       return record;
     }

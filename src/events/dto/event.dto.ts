@@ -1,14 +1,20 @@
 import { PartialType } from '@nestjs/swagger';
 export enum EventStatus {
-  PENDING = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  ACKNOWLEDGED = 'ACKNOWLEDGED',
+  REJECTED = 'REJECTED',
+  UNDER_REVIEW = 'UNDER_REVIEW',
 }
+
 export class CreateEventDto {
   name: string;
+  kind: string;
   description: string;
-  reservation?: string;
+  society: string;
   createdBy: string;
 }
+
 export class CreatedEventDto extends CreateEventDto {
   status: EventStatus;
 }
