@@ -48,7 +48,7 @@ export class OrganizationsController {
   async create(
     @Body() createOrganizationDto: CreateOrganizationDto,
   ): Promise<Organization> {
-    const organizationRecord = this.organizationService.create(
+    const organizationRecord = await this.organizationService.create(
       createOrganizationDto,
     );
     if (organizationRecord) {
