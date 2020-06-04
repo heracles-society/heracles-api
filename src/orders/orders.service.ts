@@ -4,7 +4,13 @@ import { CreateOrdersDto } from './dto/orders.dto';
 import { ORDERS_PROVIDER } from './constant';
 import { Orders, OrderStatus } from './interface/orders.interface';
 import { PaymentService } from './payment.service';
+import { isArray } from 'util';
 
+interface PaginatedUser {
+  data: Orders[];
+  total: number;
+  cursor: Date;
+}
 @Injectable()
 export class OrdersService {
   constructor(
@@ -13,7 +19,7 @@ export class OrdersService {
   ) {}
   private async createPayment(createOrderDto: CreateOrdersDto) {
     const orderDate = {
-      amount: createOrderDto.Amount * 100,
+      amount: createOrderDto.amount * 100,
       currency: 'INR',
       receipt: 'receipt',
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -34,11 +40,11 @@ export class OrdersService {
   }
   async create(createOrderDto: CreateOrdersDto): Promise<Orders> {
     const paymentInfo = await this.createPayment(createOrderDto);
-    const { Kind, Amount, Description, createdFor, createdBy } = createOrderDto;
+    const { kind, amount, description, createdFor, createdBy } = createOrderDto;
     const newOrder = new this.ordersModel({
-      Kind,
-      Amount,
-      Description,
+      kind,
+      amount,
+      description,
       createdFor,
       createdBy,
       Status: OrderStatus.PENDING,
@@ -49,9 +55,38 @@ export class OrdersService {
     return newOrder.save();
   }
 
-  async findAll(query: Record<string, any>): Promise<Orders[]> {
-    const data = await this.ordersModel.find(query).exec();
+  async findAll(
+    query: Record<string, any>,
+    options = { skip: 0, limit: 25, cursor: null },
+  ): Promise<PaginatedUser> {
+    const { skip, limit, cursor } = options;
+    let updatedQuery = {};
+    if (cursor) {
+      if (isArray(query['$and'])) {
+        updatedQuery['$and'] = [
+          { createdAt: { $gt: cursor } },
+          ...query['$and'],
+        ];
+      } else {
+        updatedQuery['$and'] = [{ createdAt: { $gt: cursor } }, query];
+      }
+    } else {
+      updatedQuery = query;
+    }
+    const data = await this.ordersModel
+      .find(updatedQuery)
+      .skip(skip)
+      .limit(limit)
+      .exec();
 
-    return data;
+    const count = await this.ordersModel.countDocuments(updatedQuery).exec();
+    const cursorId = data.length
+      ? data[data.length - 1]['createdAt'].getTime()
+      : null;
+    return {
+      total: count,
+      data: data,
+      cursor: cursorId,
+    };
   }
 }

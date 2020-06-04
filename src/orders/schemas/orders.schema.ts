@@ -3,11 +3,11 @@ import { USER_MODEL } from '../../users/constants';
 
 export const OrdersSchema = new mongoose.Schema(
   {
-    Razorpayid: String,
-    Kind: String,
-    Amount: Number,
-    Description: String,
-    Status: String,
+    razorpayid: String,
+    kind: String,
+    amount: Number,
+    description: String,
+    status: String,
     createdFor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: USER_MODEL,

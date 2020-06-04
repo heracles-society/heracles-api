@@ -6,6 +6,7 @@ import {
   BadRequestException,
   Get,
   Query,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -36,11 +37,11 @@ export class OrdersController {
   async create(
     @Body() createOrderDto: CreateOrdersDto,
   ): Promise<CreatedOrderDto> {
-    const { Kind, Amount, Description, createdFor, createdBy } = createOrderDto;
+    const { kind, amount, description, createdFor, createdBy } = createOrderDto;
     const newOrder = await this.orderService.create({
-      Kind,
-      Amount,
-      Description,
+      kind,
+      amount,
+      description,
       createdFor,
       createdBy,
     });
@@ -61,8 +62,9 @@ export class OrdersController {
     type: String,
   })
   @PaginatedAPIParams
-  async findAll(@Query() query: any): Promise<Orders[]> {
+  async findAll(@Query() query: any, @Req() req): Promise<Orders[]> {
     const queryString: string = query.q;
+    const { skip, limit, cursor } = query;
     let params = {};
     if (queryString) {
       const parsedQueryString = await this.utilService.parseQueryParam(
@@ -73,9 +75,14 @@ export class OrdersController {
       );
       params = finalDBQuery;
     }
-
-    const order = this.orderService.findAll(params);
-    return order;
+    const {
+      total,
+      data,
+      cursor: newCursor,
+    } = await this.orderService.findAll(params, { skip, limit, cursor });
+    req.res.set('HERACLES-API-Total-Count', total);
+    req.res.set('HERACLES-API-Cursor', newCursor);
+    return data;
   }
 
   // POST CALL FOR WEBHOOK

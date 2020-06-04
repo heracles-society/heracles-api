@@ -1,11 +1,11 @@
 import { Document } from 'mongoose';
 
 export interface Orders extends Document {
-  Razorpayid: string;
-  Kind: string;
-  Amount: number;
-  Description: string;
-  Status: OrderStatus;
+  razorpayid: string;
+  kind: string;
+  amount: number;
+  description: string;
+  status: OrderStatus;
   createdFor: string;
   createdBy: string;
   metaField?: object;

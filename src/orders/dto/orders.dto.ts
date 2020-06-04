@@ -1,14 +1,14 @@
 import { OrderStatus } from '../interface/orders.interface';
 
 export class CreateOrdersDto {
-  Kind: string;
-  Amount: number;
-  Description: string;
+  kind: string;
+  amount: number;
+  description: string;
   createdFor: string;
   createdBy: string;
 }
 
 export class CreatedOrderDto extends CreateOrdersDto {
-  Status: OrderStatus;
+  status: OrderStatus;
   metaField?: object;
 }
