@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import { SocietyModule } from './society/society.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -10,6 +11,7 @@ import configuration from './config/configuration';
       expandVariables: true,
     }),
     DatabaseModule,
+    SocietyModule,
   ],
   providers: [],
 })

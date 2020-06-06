@@ -1,5 +1,4 @@
 import { Model } from 'mongoose';
-import { BaseModel } from './base.model';
 import { isArray } from 'lodash';
 import {
   IQueryOptions,
@@ -7,6 +6,7 @@ import {
   IBaseService,
   IPaginationQuery,
 } from './base.interface';
+import { BaseModel } from './base.model';
 
 export class BaseService<T extends BaseModel> implements IBaseService<T> {
   constructor(private readonly baseModel: Model<T>) {}

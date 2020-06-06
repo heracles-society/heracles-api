@@ -1,6 +1,5 @@
 import { Document } from 'mongoose';
-
-export interface BaseModel extends Document {
+export class BaseModel extends Document {
   namespace: string;
   createdAt: Date;
   updatedAt: Date;

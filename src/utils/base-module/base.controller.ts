@@ -5,29 +5,33 @@ import {
   ApiOkResponse,
   ApiOperation,
 } from '@nestjs/swagger';
-import { BaseModel } from './base.model';
 import { BaseService } from './base.service';
 import { Request } from 'express';
 import { parseQueryParamFilters } from '../helpers/api.helpers';
 import { parseQueryParamFilterToDBQuery } from '../helpers/db.helpers';
 import { IQueryOptions } from './base.interface';
+import { BaseModel } from './base.model';
+import { BaseEntityDto } from './base.entity.dto';
 
-interface IBaseControllerFactoryOptions<T extends BaseModel> {
-  entity: { new (): T };
+interface IBaseControllerFactoryOptions<U> {
+  entity: { new (): U };
+  createdEntity: { new (): any };
 }
 
-export function baseControllerFactory<T extends BaseModel>(
-  options: IBaseControllerFactoryOptions<T>,
-): Function {
-  const Entity = options.entity;
+export function baseControllerFactory<
+  T extends BaseModel,
+  U extends BaseEntityDto
+>(options: IBaseControllerFactoryOptions<U>): any {
+  const EntitySchema = options.entity;
+  const CreatedEntitySchema = options.createdEntity;
 
-  @ApiTags(Entity.name)
+  @ApiTags()
   abstract class BaseController {
     constructor(protected readonly baseService: BaseService<T>) {}
 
     @Get()
     @ApiOkResponse({
-      type: [Entity],
+      type: [CreatedEntitySchema],
     })
     @ApiQuery({
       name: 'q',
@@ -35,7 +39,7 @@ export function baseControllerFactory<T extends BaseModel>(
       required: false,
       type: String,
     })
-    @ApiOperation({ operationId: `${Entity.name}_Find` })
+    @ApiOperation({ operationId: `${EntitySchema.name}_Find` })
     public async find(@Query() query: any, @Req() req: Request) {
       const queryString: string = query.q;
       const { skip, limit, cursor } = query;
