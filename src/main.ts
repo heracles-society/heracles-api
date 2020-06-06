@@ -11,6 +11,7 @@ async function bootstrap() {
     origin: '*',
     exposedHeaders: ['*', 'Authorization'],
   });
+  app.setGlobalPrefix('/api/v1');
 
   const options = new DocumentBuilder()
     .addOAuth2({
