@@ -13,6 +13,9 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('/api/v1');
 
+  const configService = app.get(ConfigService);
+  const port = configService.get('PORT', 80);
+
   const options = new DocumentBuilder()
     .addOAuth2({
       type: 'oauth2',
@@ -35,15 +38,20 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('/api/v1/', app, document);
+  SwaggerModule.setup('/api/v1/', app, document, {
+    swaggerOptions: {
+      oauth2RedirectUrl: `http://localhost:${port}/api/v1/oauth2-redirect.html`,
+      oauth: {
+        clientId: configService.get('GOOGLE_OAUTH_2_CLIENT_ID') || '',
+      },
+    },
+  });
 
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
 
-  const configService = app.get(ConfigService);
-  const port = configService.get('PORT', 80);
   console.log(`Listening on port [${port}]...`);
   await app.listen(port);
 }

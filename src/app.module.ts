@@ -4,6 +4,7 @@ import { DatabaseModule } from './database/database.module';
 import { SocietyModule } from './society/society.module';
 import { UserModule } from './user/user.module';
 import configuration from './config/configuration';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import configuration from './config/configuration';
     DatabaseModule,
     SocietyModule,
     UserModule,
+    AuthModule,
   ],
   providers: [],
 })

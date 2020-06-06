@@ -5,12 +5,14 @@ import { GoogleBearerGuard } from './google.guard';
 import { AuthService, AuthJwtToken } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private configService: ConfigService,
   ) {}
+
   @ApiExcludeEndpoint()
   @UseGuards(AuthGuard('google'))
   @Get('google/login')
@@ -25,7 +27,6 @@ export class AuthController {
     return this.authService.generateToken(req.user);
   }
 
-  @ApiTags('google-oauth-2')
   @UseGuards(GoogleBearerGuard)
   @ApiOAuth2([
     'https://www.googleapis.com/auth/userinfo.email',
@@ -42,7 +43,6 @@ export class AuthController {
     return authJwtToken;
   }
 
-  @ApiTags('well-knowns')
   @Get('.well-knowns/public_key')
   async exposePublicKey(): Promise<string> {
     return this.configService.get('JWT_PUBLIC_KEY');
