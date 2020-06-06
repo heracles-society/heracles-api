@@ -25,12 +25,6 @@ export class AuthController {
     return this.authService.generateToken(req.user);
   }
 
-  @ApiTags('well-knowns')
-  @Get('well-knowns/public_key')
-  async exposePublicKey(): Promise<string> {
-    return this.configService.get('JWT_PUBLIC_KEY');
-  }
-
   @ApiTags('google-oauth-2')
   @UseGuards(GoogleBearerGuard)
   @ApiOAuth2([
@@ -46,5 +40,11 @@ export class AuthController {
     );
     const authJwtToken = this.authService.generateToken(user);
     return authJwtToken;
+  }
+
+  @ApiTags('well-knowns')
+  @Get('.well-knowns/public_key')
+  async exposePublicKey(): Promise<string> {
+    return this.configService.get('JWT_PUBLIC_KEY');
   }
 }

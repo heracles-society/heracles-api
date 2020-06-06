@@ -44,7 +44,7 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
       cursor: cursorId,
     };
   }
-
+  findOne: (query: IQueryOptions) => Promise<T>;
   findById: (i: string | number) => Promise<T>;
   create: (i: any) => Promise<T>;
   update: (id: string | number, i: any) => Promise<any>;

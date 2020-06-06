@@ -17,6 +17,7 @@ export interface IPaginatedResult<T> {
 
 export interface IBaseService<T> {
   find: (f: IQueryOptions) => Promise<IPaginatedResult<T>>;
+  findOne: (query: IQueryOptions) => Promise<T>;
   findById: (i: string | number) => Promise<T>;
   create: (i: any) => Promise<T>;
   update: (id: string | number, i: any) => Promise<any>;

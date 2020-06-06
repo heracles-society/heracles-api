@@ -1,7 +1,7 @@
 import { Module, HttpModule } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
+import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleOauth2Strategy } from './google.service';
 import { AuthController } from './auth.controller';
@@ -12,7 +12,7 @@ import { JwtStrategy } from './jwt.strategy';
 @Module({
   imports: [
     HttpModule,
-    UsersModule,
+    UserModule,
     PassportModule,
     ConfigModule.forFeature(googleConfig),
     JwtModule.registerAsync({

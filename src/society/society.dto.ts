@@ -1,8 +1,11 @@
-import { BaseEntityDto } from '../utils/base-module/base.entity.dto';
+import {
+  BaseEntityDto,
+  CreatedBaseEntity,
+} from '../utils/base-module/base.entity.dto';
+import { PartialType } from '@nestjs/swagger';
 
 export class CreateSocietyDto extends BaseEntityDto {
   name: string;
-  organization: string;
   address: string;
   state: string;
   highlights: string;
@@ -12,7 +15,14 @@ export class CreateSocietyDto extends BaseEntityDto {
   areaUnit: string;
   latitude: string;
   longitude: string;
-  managers: string[];
 }
 
-export class CreatedSocietyDto extends CreateSocietyDto {}
+export class CreatedSocietyDto extends CreateSocietyDto
+  implements CreatedBaseEntity {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  namespace: string;
+}
+
+export class UpdateSocietyDto extends PartialType(CreateSocietyDto) {}

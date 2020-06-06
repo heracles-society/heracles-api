@@ -1,8 +1,8 @@
 import { Injectable, HttpService } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../users/users.service';
-import { User } from '../users/interface/user.interface';
+import { UserService } from '../user/user.service';
+import { User } from '../user/user.model';
 
 export interface AuthProfile {
   email: string;
@@ -22,7 +22,7 @@ export interface AuthJwtToken {
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
+    private userService: UserService,
     private jwtService: JwtService,
     private httpService: HttpService,
   ) {}
@@ -76,12 +76,12 @@ export class AuthService {
       sub: openId,
     } = authProfile;
 
-    const user = await this.usersService.findOne({
-      openId: openId,
+    const user = await this.userService.findOne({
+      $and: [{ openId: openId }],
     });
 
     if (user === null) {
-      const user = await this.usersService.create({
+      const user = await this.userService.create({
         email,
         name,
         familyName,
