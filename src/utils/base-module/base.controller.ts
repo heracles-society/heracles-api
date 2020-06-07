@@ -17,6 +17,8 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { BaseService } from './base.service';
 import { Request } from 'express';
@@ -53,6 +55,9 @@ export function baseControllerFactory<
       type: String,
     })
     @PaginatedAPIParams
+    @ApiUnauthorizedResponse({
+      description: 'Permission required to perform operation.',
+    })
     @ApiOperation({ operationId: `${EntitySchema.name}_Find` })
     public async find(@Query() query: any, @Req() req: Request) {
       const queryString: string = query.q;
@@ -79,8 +84,11 @@ export function baseControllerFactory<
 
     @Post()
     @ApiCreatedResponse({
-      description: 'The record has been successfully created.',
+      description: 'The entity record has been successfully created.',
       type: CreatedEntitySchema,
+    })
+    @ApiUnauthorizedResponse({
+      description: 'Permission required to perform operation.',
     })
     @ApiOperation({ operationId: `${EntitySchema.name}_Create` })
     async create(@Body() entity: BaseEntityDto) {
@@ -94,6 +102,10 @@ export function baseControllerFactory<
     @Get(':id')
     @ApiOkResponse({
       type: CreatedEntitySchema,
+      description: 'Entity record found.',
+    })
+    @ApiUnauthorizedResponse({
+      description: 'Permission required to perform operation.',
     })
     @ApiOperation({ operationId: `${EntitySchema.name}_Find_One` })
     async findById(@Param('id') entityId: string) {
@@ -107,6 +119,13 @@ export function baseControllerFactory<
     @Put(':id')
     @ApiOkResponse({
       type: CreatedEntitySchema,
+      description: 'Entity record updated successfully.',
+    })
+    @ApiUnauthorizedResponse({
+      description: 'Permission required to perform operation.',
+    })
+    @ApiNotFoundResponse({
+      description: 'Entity record not found.',
     })
     @ApiOperation({ operationId: `${EntitySchema.name}_Update_One` })
     async updateById(@Param('id') entityId: string, @Body() body) {
@@ -120,6 +139,13 @@ export function baseControllerFactory<
     @Patch(':id')
     @ApiOkResponse({
       type: CreatedEntitySchema,
+      description: 'Patched entity succesfully.',
+    })
+    @ApiUnauthorizedResponse({
+      description: 'Permission required to perform operation.',
+    })
+    @ApiNotFoundResponse({
+      description: 'Entity record not found.',
     })
     @ApiOperation({ operationId: `${EntitySchema.name}_Patch_One` })
     async patchById(@Param('id') entityId: string, @Body() body) {
@@ -135,6 +161,12 @@ export function baseControllerFactory<
       type: null,
       status: HttpStatus.NO_CONTENT,
       description: 'Entity deleted successfully',
+    })
+    @ApiUnauthorizedResponse({
+      description: 'Permission required to perform operation.',
+    })
+    @ApiNotFoundResponse({
+      description: 'Entity record not found.',
     })
     @ApiOperation({ operationId: `${EntitySchema.name}_Delete_One` })
     async deleteById(@Param('id') entityId: string) {
