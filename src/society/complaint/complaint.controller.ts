@@ -10,7 +10,7 @@ import { ApiTags, ApiParam } from '@nestjs/swagger';
 import { ComplaintService } from './complaint.service';
 
 const BaseComplaintController = baseControllerFactory<Complaint>({
-  name: 'inventories',
+  name: 'complaints',
   routeDecorators: () =>
     applyDecorators(
       ApiParam({
@@ -25,8 +25,8 @@ const BaseComplaintController = baseControllerFactory<Complaint>({
   createdEntitySchema: CreatedComplaintDto,
 });
 
-@ApiTags('inventories')
-@Controller('societies/:societyId/inventories')
+@ApiTags('complaints')
+@Controller('societies/:societyId/complaints')
 export class ComplaintController extends BaseComplaintController {
   constructor(complaintService: ComplaintService) {
     super(complaintService);
