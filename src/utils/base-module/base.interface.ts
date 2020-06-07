@@ -16,10 +16,14 @@ export interface IPaginatedResult<T> {
 }
 
 export interface IBaseService<T> {
-  find: (f: IQueryOptions) => Promise<IPaginatedResult<T>>;
+  find: (
+    query: IQueryOptions,
+    options: IPaginationQuery,
+  ) => Promise<IPaginatedResult<T>>;
   findOne: (query: IQueryOptions) => Promise<T>;
-  findById: (i: string | number) => Promise<T>;
-  create: (i: any) => Promise<T>;
-  update: (id: string | number, i: any) => Promise<any>;
-  delete: (i: string | number) => Promise<any>;
+  findById: (id: string) => Promise<T>;
+  create: (data: any) => Promise<T>;
+  update: (id: string, data: any) => Promise<T>;
+  patch: (id: string, data: any) => Promise<T>;
+  delete: (id: string) => Promise<T>;
 }

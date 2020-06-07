@@ -7,7 +7,8 @@ import {
   IPaginationQuery,
 } from './base.interface';
 import { BaseModel } from './base.model';
-
+import { BaseEntityDto } from './base.entity.dto';
+import { apply } from 'json-merge-patch';
 export class BaseService<T extends BaseModel> implements IBaseService<T> {
   constructor(private readonly baseModel: Model<T>) {}
   async find(
@@ -52,7 +53,40 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
     return this.baseModel.findById(id);
   }
 
-  create: (i: any) => Promise<T>;
-  update: (id: string | number, i: any) => Promise<any>;
-  delete: (i: string | number) => Promise<any>;
+  async create(entity: BaseEntityDto): Promise<T> {
+    const createdEvent = new this.baseModel(entity);
+    return createdEvent.save();
+  }
+
+  async update(id: string, data: any): Promise<T> {
+    const entity = await this.findById(id);
+    if (!entity) {
+      return null;
+    }
+
+    entity.update(data);
+    return entity;
+  }
+
+  async patch(id: string, data: any): Promise<T> {
+    const entity = await this.findById(id);
+    if (!entity) {
+      return null;
+    }
+
+    const oldData = entity.toJSON;
+    const updatedData = apply(oldData, data);
+    entity.update(updatedData);
+    return entity;
+  }
+
+  async delete(id: string): Promise<any> {
+    const entity = await this.findById(id);
+    if (!entity) {
+      return null;
+    }
+
+    entity.remove();
+    return entity;
+  }
 }
