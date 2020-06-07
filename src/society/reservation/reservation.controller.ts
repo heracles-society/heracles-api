@@ -1,16 +1,20 @@
 import { Controller } from '@nestjs/common';
-import { CreateReservationDto, CreatedReservationDto } from './reservation.dto';
+import {
+  CreateReservationDto,
+  CreatedReservationDto,
+  UpdateReservationDto,
+} from './reservation.dto';
 import { baseControllerFactory } from '../../utils/base-module/base.controller';
 import { Reservation } from './reservation.model';
 import { ApiTags } from '@nestjs/swagger';
 import { ReservationService } from './reservation.service';
 
-const BaseReservationController = baseControllerFactory<
-  Reservation,
-  CreateReservationDto
->({
-  entity: CreateReservationDto,
-  createdEntity: CreatedReservationDto,
+const BaseReservationController = baseControllerFactory<Reservation>({
+  name: 'reservation',
+  entity: Reservation,
+  createEntitySchema: CreateReservationDto,
+  patchEntitySchema: UpdateReservationDto,
+  createdEntitySchema: CreatedReservationDto,
 });
 
 @ApiTags('reservation')

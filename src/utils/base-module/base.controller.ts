@@ -19,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiUnauthorizedResponse,
+  ApiBody,
 } from '@nestjs/swagger';
 import { BaseService } from './base.service';
 import { Request } from 'express';
@@ -26,20 +27,33 @@ import { parseQueryParamFilters } from '../helpers/api.helpers';
 import { parseQueryParamFilterToDBQuery } from '../helpers/db.helpers';
 import { IQueryOptions } from './base.interface';
 import { BaseModel } from './base.model';
-import { BaseEntityDto } from './base.entity.dto';
 import { PaginatedAPIParams } from '../pagination.decorators';
 
-interface IBaseControllerFactoryOptions<U> {
-  entity: { new (): U };
-  createdEntity: { new (): any };
+interface IBaseControllerFactoryOptions<T> {
+  name: string;
+  auth?: Function;
+  entity: { new (): T };
+  createEntitySchema: { new (): any };
+  createdEntitySchema?: { new (): any };
+  patchEntitySchema?: { new (): any };
 }
 
-export function baseControllerFactory<
-  T extends BaseModel,
-  U extends BaseEntityDto
->(options: IBaseControllerFactoryOptions<U>) {
-  const EntitySchema = options.entity;
-  const CreatedEntitySchema = options.createdEntity;
+export function baseControllerFactory<T extends BaseModel>(
+  options: IBaseControllerFactoryOptions<T>,
+): any {
+  const CreateEntitySchema = options.createEntitySchema;
+  const CreatedEntitySchema = options.createdEntitySchema;
+  const PatchEntitySchema = options.patchEntitySchema;
+
+  class CreateEntitySchemaKlass extends CreateEntitySchema {}
+  class PatchEntitySchemaKlass extends PatchEntitySchema {}
+
+  Object.defineProperty(CreateEntitySchemaKlass, 'name', {
+    value: CreatedEntitySchema.name,
+  });
+  Object.defineProperty(PatchEntitySchemaKlass, 'name', {
+    value: PatchEntitySchema.name,
+  });
 
   abstract class BaseController {
     constructor(public baseService: BaseService<T>) {}
@@ -58,7 +72,7 @@ export function baseControllerFactory<
     @ApiUnauthorizedResponse({
       description: 'Permission required to perform operation.',
     })
-    @ApiOperation({ operationId: `${EntitySchema.name}_Find` })
+    @ApiOperation({ operationId: `${options.name}_Find` })
     public async find(@Query() query: any, @Req() req: Request) {
       const queryString: string = query.q;
       const { skip = 0, limit = 10, cursor = null } = query;
@@ -90,8 +104,14 @@ export function baseControllerFactory<
     @ApiUnauthorizedResponse({
       description: 'Permission required to perform operation.',
     })
-    @ApiOperation({ operationId: `${EntitySchema.name}_Create` })
-    async create(@Body() entity: BaseEntityDto) {
+    @ApiBody({
+      required: true,
+      type: CreateEntitySchema,
+      description: 'Data for entity creation',
+      isArray: false,
+    })
+    @ApiOperation({ operationId: `${options.name}_Create` })
+    async create(@Body() entity: CreateEntitySchemaKlass) {
       const createdEntity = await this.baseService.create(entity);
       if (createdEntity) {
         return createdEntity;
@@ -107,7 +127,7 @@ export function baseControllerFactory<
     @ApiUnauthorizedResponse({
       description: 'Permission required to perform operation.',
     })
-    @ApiOperation({ operationId: `${EntitySchema.name}_Find_One` })
+    @ApiOperation({ operationId: `${options.name}_Find_One` })
     async findById(@Param('id') entityId: string) {
       const record = await this.baseService.findById(entityId);
       if (record) {
@@ -127,8 +147,17 @@ export function baseControllerFactory<
     @ApiNotFoundResponse({
       description: 'Entity record not found.',
     })
-    @ApiOperation({ operationId: `${EntitySchema.name}_Update_One` })
-    async updateById(@Param('id') entityId: string, @Body() body) {
+    @ApiBody({
+      required: true,
+      type: CreateEntitySchema,
+      description: 'Data for updating entity',
+      isArray: false,
+    })
+    @ApiOperation({ operationId: `${options.name}_Update_One` })
+    async updateById(
+      @Param('id') entityId: string,
+      @Body() body: CreateEntitySchemaKlass,
+    ) {
       const updatedEntity = await this.baseService.update(entityId, body);
       if (updatedEntity) {
         return updatedEntity;
@@ -147,8 +176,14 @@ export function baseControllerFactory<
     @ApiNotFoundResponse({
       description: 'Entity record not found.',
     })
-    @ApiOperation({ operationId: `${EntitySchema.name}_Patch_One` })
-    async patchById(@Param('id') entityId: string, @Body() body) {
+    @ApiBody({
+      type: PatchEntitySchema,
+    })
+    @ApiOperation({ operationId: `${options.name}_Patch_One` })
+    async patchById(
+      @Param('id') entityId: string,
+      @Body() body: PatchEntitySchemaKlass,
+    ) {
       const updatedEntity = await this.baseService.patch(entityId, body);
       if (updatedEntity) {
         return updatedEntity;
@@ -168,7 +203,7 @@ export function baseControllerFactory<
     @ApiNotFoundResponse({
       description: 'Entity record not found.',
     })
-    @ApiOperation({ operationId: `${EntitySchema.name}_Delete_One` })
+    @ApiOperation({ operationId: `${options.name}_Delete_One` })
     async deleteById(@Param('id') entityId: string) {
       const updatedEntity = await this.baseService.delete(entityId);
       if (updatedEntity) {
@@ -178,5 +213,5 @@ export function baseControllerFactory<
     }
   }
 
-  return class extends BaseController {};
+  return BaseController;
 }
