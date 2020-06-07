@@ -52,7 +52,10 @@ export function baseControllerFactory<
         cursor: newCursor,
       } = await this.baseService.find(params, { skip, limit, cursor });
       req.res.set('HERACLES-API-Total-Count', total.toString());
-      req.res.set('HERACLES-API-Cursor', newCursor.toString());
+      req.res.set(
+        'HERACLES-API-Cursor',
+        newCursor ? newCursor.toString() : null,
+      );
       return data;
     }
   }
