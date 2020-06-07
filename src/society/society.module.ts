@@ -7,6 +7,7 @@ import { ReservationModule } from './reservation/reservation.module';
 import { ComplaintModule } from './complaint/complaint.module';
 import { EventModule } from './event/event.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { ApplicationModule } from './application/application.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { InventoryModule } from './inventory/inventory.module';
     ComplaintModule,
     EventModule,
     InventoryModule,
+    ApplicationModule,
   ],
   controllers: [SocietyController],
   providers: [SocietyService, ...SocietyProvider.getProviders()],
