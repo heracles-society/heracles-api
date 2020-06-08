@@ -5,6 +5,8 @@ import { SocietyModule } from './society/society.module';
 import { UserModule } from './user/user.module';
 import configuration from './config/configuration';
 import { AuthModule } from './auth/auth.module';
+import { RoleBindingModule } from './role-binding/role-binding.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AuthModule } from './auth/auth.module';
     SocietyModule,
     UserModule,
     AuthModule,
+    RoleModule,
+    RoleBindingModule,
   ],
   providers: [],
 })

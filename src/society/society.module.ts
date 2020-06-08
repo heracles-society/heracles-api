@@ -8,10 +8,12 @@ import { ComplaintModule } from './complaint/complaint.module';
 import { EventModule } from './event/event.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { ApplicationModule } from './application/application.module';
+import { RoleBindingModule } from '../role-binding/role-binding.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    RoleBindingModule,
     forwardRef(() => ReservationModule),
     forwardRef(() => ComplaintModule),
     forwardRef(() => EventModule),

@@ -10,7 +10,7 @@ import { BaseModel } from './base.model';
 import { BaseEntityDto } from './base.entity.dto';
 import { apply } from 'json-merge-patch';
 export class BaseService<T extends BaseModel> implements IBaseService<T> {
-  constructor(private readonly baseModel: Model<T>) {}
+  constructor(protected readonly baseModel: Model<T>) {}
   async find(
     query: IQueryOptions,
     options: IPaginationQuery = { skip: 0, limit: 25, cursor: null },
