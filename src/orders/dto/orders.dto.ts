@@ -10,5 +10,5 @@ export class CreateOrdersDto {
 
 export class CreatedOrderDto extends CreateOrdersDto {
   status: OrderStatus;
-  metaField?: object;
+  metaField: object;
 }

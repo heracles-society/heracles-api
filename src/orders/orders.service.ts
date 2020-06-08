@@ -39,7 +39,7 @@ export class OrdersService {
     });
   }
   async create(createOrderDto: CreateOrdersDto): Promise<Orders> {
-    const paymentInfo = await this.createPayment(createOrderDto);
+    const paymentInfo: any = await this.createPayment(createOrderDto);
     const { kind, amount, description, createdFor, createdBy } = createOrderDto;
     const newOrder = new this.ordersModel({
       kind,
@@ -47,7 +47,7 @@ export class OrdersService {
       description,
       createdFor,
       createdBy,
-      Status: OrderStatus.PENDING,
+      status: OrderStatus.PENDING,
       metadata: {
         paymentInfo,
       },
@@ -88,5 +88,13 @@ export class OrdersService {
       data: data,
       cursor: cursorId,
     };
+  }
+
+  async findOneAndUpdate(filter: any, update: any): Promise<Orders> {
+    return this.ordersModel
+      .findOneAndUpdate(filter, update, {
+        new: true,
+      })
+      .exec();
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import {
   Controller,
   Post,
@@ -7,6 +8,9 @@ import {
   Get,
   Query,
   Req,
+  NotFoundException,
+  Put,
+  Param,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,13 +18,17 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiQuery,
+  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { CreateOrdersDto, CreatedOrderDto } from './dto/orders.dto';
 import { PaginatedAPIParams } from '../utils/pagination.decorators';
-import { Orders } from './interface/orders.interface';
+import { Orders, OrderStatus } from './interface/orders.interface';
 import { UtilService } from '../utils/utils.service';
+import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
+import { TRANSACTION_SUCCESS, TRANSACTION_FAILURE } from './constant';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -28,6 +36,7 @@ export class OrdersController {
   constructor(
     private orderService: OrdersService,
     private utilService: UtilService,
+    private configService: ConfigService,
   ) {}
 
   @Post()
@@ -85,5 +94,76 @@ export class OrdersController {
     return data;
   }
 
-  // POST CALL FOR WEBHOOK
+  @Post('payment')
+  @ApiExcludeEndpoint()
+  @ApiOkResponse()
+  async updatePaymentStatus(@Req() req): Promise<any> {
+    const { status, order_id } = req.body.payload.payment.entity;
+
+    if (!order_id) {
+      throw new NotFoundException();
+    }
+
+    if (this.isValidSignature(req.body, req.headers['x-razorpay-signature'])) {
+      let orderRecord;
+      // Check if transaction is success, then update the status to COMPLETE in orders table else update to FAILED
+      if (status === TRANSACTION_SUCCESS) {
+        orderRecord = await this.orderService.findOneAndUpdate(
+          {
+            'metadata.paymentInfo.id': order_id,
+          },
+          { status: OrderStatus.COMPLETED },
+        );
+      } else if (status === TRANSACTION_FAILURE) {
+        orderRecord = await this.orderService.findOneAndUpdate(
+          {
+            'metadata.paymentInfo.id': order_id,
+          },
+          { status: OrderStatus.FAILED },
+        );
+      }
+      if (orderRecord) {
+        return orderRecord;
+      } else {
+        throw new NotFoundException();
+      }
+    }
+  }
+
+  @Put('updateStatus/:id/:paymentId')
+  async updateStatus(
+    @Param('id') id: string,
+    @Param('paymentId') paymentId: string,
+  ): Promise<Orders> {
+    const orderRecord = await this.orderService.findOneAndUpdate(
+      {
+        createdFor: id,
+        'metadata.paymentInfo.id': paymentId,
+      },
+      { status: OrderStatus.IN_PROGRESS },
+    );
+    if (orderRecord) {
+      return orderRecord;
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  /**
+   * @name isValidSignature
+   * @param body { Object } request body object
+   * @param signature { String } razorpay signature from req headers
+   * @returns { Boolean } return true or false if signature is valid
+   */
+  private isValidSignature(body: any, signature: string): boolean {
+    const paymentSecret: string = this.configService.get(
+      'RAZORPAY_PAYMENT_SECRET',
+    );
+    const expectedSignature: string = crypto
+      .createHmac('sha256', paymentSecret)
+      .update(JSON.stringify(body))
+      .digest('hex');
+
+    return expectedSignature === signature;
+  }
 }

@@ -8,7 +8,7 @@ export interface Orders extends Document {
   status: OrderStatus;
   createdFor: string;
   createdBy: string;
-  metaField?: object;
+  metaField: object;
 }
 
 export enum OrderStatus {
