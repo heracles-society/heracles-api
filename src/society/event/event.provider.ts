@@ -9,14 +9,8 @@ const EventSchema = new Schema(
     name: String,
     kind: String,
     description: String,
-    society: {
-      type: Types.ObjectId,
-      ref: SOCIETY_MODEL,
-    },
-    createdBy: {
-      type: Types.ObjectId,
-      ref: USER_MODEL,
-    },
+    society: { type: Types.ObjectId, ref: SOCIETY_MODEL },
+    createdBy: { type: Types.ObjectId, ref: USER_MODEL },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

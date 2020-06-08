@@ -50,7 +50,7 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
   }
 
   async findById(id: string): Promise<T> {
-    return this.baseModel.findById(id);
+    return this.baseModel.findById(id).exec();
   }
 
   async create(entity: BaseEntityDto): Promise<T> {
@@ -74,7 +74,7 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
       return null;
     }
 
-    const oldData = entity.toJSON;
+    const oldData = entity.toJSON();
     const updatedData = apply(oldData, data);
     entity.update(updatedData);
     return entity;

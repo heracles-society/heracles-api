@@ -18,7 +18,7 @@ export class CreatedReservationDto extends CreateReservationDto
   id: string;
   createdAt: Date;
   updatedAt: Date;
-  namespace: string;
+  society: string;
 }
 
 export class UpdateReservationDto extends PartialType(CreateReservationDto) {}

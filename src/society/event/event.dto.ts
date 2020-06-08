@@ -16,13 +16,13 @@ export class CreateEventDto extends BaseEntityDto {
   name: string;
   kind: string;
   description: string;
-  society: string;
   createdBy: string;
 }
 
 export class CreatedEventDto extends CreateEventDto
   implements CreatedBaseEntity {
   id: string;
+  society: string;
   status: EventStatus;
   createdAt: Date;
   updatedAt: Date;
