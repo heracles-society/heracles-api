@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { SocietyController } from './society.controller';
 import { SocietyService } from './society.service';
 import { SocietyProvider } from './society.provider';
@@ -12,11 +12,11 @@ import { ApplicationModule } from './application/application.module';
 @Module({
   imports: [
     DatabaseModule,
-    ReservationModule,
-    ComplaintModule,
-    EventModule,
-    InventoryModule,
-    ApplicationModule,
+    forwardRef(() => ReservationModule),
+    forwardRef(() => ComplaintModule),
+    forwardRef(() => EventModule),
+    forwardRef(() => InventoryModule),
+    forwardRef(() => ApplicationModule),
   ],
   controllers: [SocietyController],
   providers: [SocietyService, ...SocietyProvider.getProviders()],

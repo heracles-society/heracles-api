@@ -12,6 +12,7 @@ import {
   HttpStatus,
   Patch,
   applyDecorators,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiQuery,
@@ -21,6 +22,7 @@ import {
   ApiNotFoundResponse,
   ApiUnauthorizedResponse,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { BaseService } from './base.service';
 import { Request } from 'express';
@@ -29,6 +31,7 @@ import { parseQueryParamFilterToDBQuery } from '../helpers/db.helpers';
 import { IQueryOptions } from './base.interface';
 import { BaseModel } from './base.model';
 import { PaginatedAPIParams } from '../pagination.decorators';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
 enum METHOD_DECORATOR_TYPES {
   GET_ALL = 'GET_ALL',
   POST = 'POST',
@@ -39,8 +42,8 @@ enum METHOD_DECORATOR_TYPES {
 }
 interface IBaseControllerFactoryOptions<T> {
   name: string;
+  authDecorators?: Function;
   routeDecorators?: Function;
-  auth?: Function;
   entity: { new (): T };
   createEntitySchema: { new (): any };
   createdEntitySchema?: { new (): any };
@@ -68,6 +71,10 @@ export function baseControllerFactory<T extends BaseModel>(
     ? options.routeDecorators
     : () => applyDecorators();
 
+  const AuthDecorators = options.authDecorators
+    ? options.authDecorators
+    : () => applyDecorators(ApiBearerAuth(), UseGuards(JwtAuthGuard));
+
   abstract class BaseController {
     constructor(public baseService: BaseService<T>) {}
 
@@ -86,6 +93,7 @@ export function baseControllerFactory<T extends BaseModel>(
       description: 'Permission required to perform operation.',
     })
     @RouteDecorators(METHOD_DECORATOR_TYPES.GET_ALL)
+    @AuthDecorators(METHOD_DECORATOR_TYPES.GET_ALL)
     @ApiOperation({ operationId: `${options.name}_Find` })
     public async find(@Query() query: any, @Req() req: Request) {
       const queryString: string = query.q;
@@ -125,6 +133,7 @@ export function baseControllerFactory<T extends BaseModel>(
       isArray: false,
     })
     @RouteDecorators(METHOD_DECORATOR_TYPES.POST)
+    @AuthDecorators(METHOD_DECORATOR_TYPES.POST)
     @ApiOperation({ operationId: `${options.name}_Create` })
     async create(@Body() entity: CreateEntitySchemaKlass) {
       const createdEntity = await this.baseService.create(entity);
@@ -143,6 +152,7 @@ export function baseControllerFactory<T extends BaseModel>(
       description: 'Permission required to perform operation.',
     })
     @RouteDecorators(METHOD_DECORATOR_TYPES.GET_ONE)
+    @AuthDecorators(METHOD_DECORATOR_TYPES.GET_ONE)
     @ApiOperation({ operationId: `${options.name}_Find_One` })
     async findById(@Param('id') entityId: string) {
       const record = await this.baseService.findById(entityId);
@@ -170,6 +180,7 @@ export function baseControllerFactory<T extends BaseModel>(
       isArray: false,
     })
     @RouteDecorators(METHOD_DECORATOR_TYPES.PUT_ONE)
+    @AuthDecorators(METHOD_DECORATOR_TYPES.PUT_ONE)
     @ApiOperation({ operationId: `${options.name}_Update_One` })
     async updateById(
       @Param('id') entityId: string,
@@ -197,6 +208,7 @@ export function baseControllerFactory<T extends BaseModel>(
       type: PatchEntitySchema,
     })
     @RouteDecorators(METHOD_DECORATOR_TYPES.PATCH_ONE)
+    @AuthDecorators(METHOD_DECORATOR_TYPES.PATCH_ONE)
     @ApiOperation({ operationId: `${options.name}_Patch_One` })
     async patchById(
       @Param('id') entityId: string,
@@ -222,6 +234,7 @@ export function baseControllerFactory<T extends BaseModel>(
       description: 'Entity record not found.',
     })
     @RouteDecorators(METHOD_DECORATOR_TYPES.DELETE_ONE)
+    @AuthDecorators(METHOD_DECORATOR_TYPES.DELETE_ONE)
     @ApiOperation({ operationId: `${options.name}_Delete_One` })
     async deleteById(@Param('id') entityId: string) {
       const updatedEntity = await this.baseService.delete(entityId);
