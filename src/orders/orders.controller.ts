@@ -9,8 +9,6 @@ import {
   Query,
   Req,
   NotFoundException,
-  Put,
-  Param,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -127,25 +125,6 @@ export class OrdersController {
       } else {
         throw new NotFoundException();
       }
-    }
-  }
-
-  @Put('updateStatus/:id/:paymentId')
-  async updateStatus(
-    @Param('id') id: string,
-    @Param('paymentId') paymentId: string,
-  ): Promise<Orders> {
-    const orderRecord = await this.orderService.findOneAndUpdate(
-      {
-        createdFor: id,
-        'metadata.paymentInfo.id': paymentId,
-      },
-      { status: OrderStatus.IN_PROGRESS },
-    );
-    if (orderRecord) {
-      return orderRecord;
-    } else {
-      throw new NotFoundException();
     }
   }
 
