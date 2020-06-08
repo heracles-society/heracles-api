@@ -20,5 +20,6 @@ import { ApplicationModule } from './application/application.module';
   ],
   controllers: [SocietyController],
   providers: [SocietyService, ...SocietyProvider.getProviders()],
+  exports: [SocietyService],
 })
 export class SocietyModule {}
