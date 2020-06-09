@@ -9,6 +9,7 @@ const RoleSchema = new Schema(
     namespace: String,
     rules: [
       {
+        _id: false,
         resourceKind: String,
         resources: [String],
         actions: [String],

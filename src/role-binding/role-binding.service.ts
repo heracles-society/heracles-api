@@ -30,29 +30,45 @@ export class RoleBindingService extends BaseService<RoleBinding> {
     resourceKind,
     resourceId,
   }: IRoleBindingValidateQuery): Promise<boolean> {
-    const roles = await this.roleService.find(
+    const { data: roles } = await this.roleService.find(
       {
-        $and: [
+        $or: [
           {
-            resourceKind,
-            resources: resourceId ? resourceId : { $size: 0 },
-            actions: action,
+            'rules.resourceKind': resourceKind,
+            'rules.resources': resourceId,
+            'rules.actions': action,
+          },
+          {
+            'rules.resourceKind': resourceKind,
+            'rules.resources': { $size: 0 },
+            'rules.actions': action,
           },
         ],
       },
       { skip: 0, limit: 50 },
     );
-    const roleBindings = await this.find({
-      $and: [
+    if (roles.length > 0) {
+      const { total } = await this.find(
         {
-          kind: RoleBindingKind.NAMESPACED,
-          namespace,
-          'subjects.id': subjectId,
-          'roles.id': roles.data.map(role => role.id),
+          $or: [
+            {
+              kind: RoleBindingKind.NAMESPACED,
+              namespace,
+              'subjects.id': subjectId,
+              'roles.id': { $in: roles.map(role => role.id) },
+            },
+            {
+              kind: RoleBindingKind.GLOBAL,
+              'subjects.id': subjectId,
+              'roles.id': { $in: roles.map(role => role.id) },
+            },
+          ],
         },
-      ],
-    });
+        { skip: 0, limit: 50 },
+      );
 
-    return roleBindings.total > 0;
+      return total > 0;
+    }
+    return false;
   }
 }

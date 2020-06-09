@@ -3,6 +3,14 @@ import {
   CreatedBaseEntity,
 } from '../utils/base-module/base.entity.dto';
 import { PartialType } from '@nestjs/swagger';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsArray,
+  ArrayMinSize,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum RoleBindingKind {
   GLOBAL = 'GLOBAL',
@@ -16,19 +24,33 @@ export enum SubjectKind {
 }
 
 export class Subject {
+  @IsNotEmpty()
   kind: SubjectKind = SubjectKind.USER;
+  @IsNotEmpty()
   id: string;
 }
 
 export class RoleRef {
+  @IsNotEmpty()
   id: string;
 }
 
 export class CreateRoleBindingDto extends BaseEntityDto {
+  @IsNotEmpty()
   name: string;
+  @IsNotEmpty()
   kind: RoleBindingKind = RoleBindingKind.NAMESPACED;
+  @IsOptional()
   namespace?: string;
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => Subject)
   subjects: Subject[];
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => RoleRef)
   roles: RoleRef[];
 }
 

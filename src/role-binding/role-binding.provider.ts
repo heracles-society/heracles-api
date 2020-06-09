@@ -11,12 +11,14 @@ const RoleBindingSchema = new Schema(
     namespace: String,
     subjects: [
       {
+        _id: false,
         kind: String,
         id: { type: Types.ObjectId, ref: USER_MODEL },
       },
     ],
     roles: [
       {
+        _id: false,
         id: { type: Types.ObjectId, ref: ROLE_MODEL },
       },
     ],
