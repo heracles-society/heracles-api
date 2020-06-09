@@ -10,7 +10,6 @@ export class SocietyNamespaceGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    debugger;
     const request = context.switchToHttp().getRequest();
     let resourceKind = this.reflector.get<string>(
       'ResourceKind',
@@ -30,10 +29,7 @@ export class SocietyNamespaceGuard implements CanActivate {
       return false;
     }
 
-    let action = request.method;
-    if (action == 'GET' && typeof request.params.id === 'undefined') {
-      action = 'LIST';
-    }
+    const action = this.reflector.get<string>('action', context.getHandler());
 
     const hasPermission = await this.roleBindingService.validatePermission({
       namespace: societyId,

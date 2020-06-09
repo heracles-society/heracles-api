@@ -68,6 +68,7 @@ export class InventoryController {
   @ApiUnauthorizedResponse({
     description: 'Permission required to perform operation.',
   })
+  @SetMetadata('action', 'LIST')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Find` })
   public async find(
     @Param('societyId') societyId: string,
@@ -120,6 +121,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
+  @SetMetadata('action', 'CREATE_ONE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Create` })
   async create(
     @Param('societyId') societyId: string,
@@ -148,6 +150,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
+  @SetMetadata('action', 'GET_ONE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Find_One` })
   async findById(
     @Param('societyId') societyId: string,
@@ -189,6 +192,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
+  @SetMetadata('action', 'PUT_ONE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Update_One` })
   async updateById(
     @Param('societyId') societyId: string,
@@ -236,6 +240,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
+  @SetMetadata('action', 'PATCH_ONE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Patch_One` })
   async patchById(
     @Param('societyId') societyId: string,
@@ -281,6 +286,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
+  @SetMetadata('action', 'DELETE_ONE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}_Delete_One` })
   async deleteById(
     @Param('societyId') societyId: string,
