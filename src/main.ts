@@ -61,6 +61,7 @@ async function bootstrap() {
       oauth: {
         clientId: configService.get('GOOGLE_OAUTH_2_CLIENT_ID') || '',
       },
+      docExpansion: 'none',
     },
   });
 

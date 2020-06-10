@@ -79,8 +79,64 @@ export function baseControllerFactory<T extends BaseModel>(
     })
     @ApiQuery({
       name: 'q',
-      description: 'Query filter',
-      example: 'a=1&b=2&(c=3&c=4&d=4|d=5|d=6)&(d=6|e=7)',
+      description: 'Filter to apply on the query.',
+      examples: {
+        none: {
+          value: null,
+          description: 'No filtering applied',
+        },
+        matchExact: {
+          value: 'name=test',
+          description: 'querying for records matching name exactly as test',
+        },
+        matchRegex: {
+          value: 'name__regex=test$',
+          description: 'querying for records matching names ending with test',
+        },
+        matchIRegex: {
+          value: 'name__iregex=test$',
+          description:
+            'querying for records matching with names (case insensitive) ending with test',
+        },
+        greater: {
+          value: 'age__gt=12',
+          description: 'querying for records matching with age greater than 12',
+        },
+        greaterThanOrEqual: {
+          value: 'age__gte=12',
+          description:
+            'querying for records matching with age greater than or equal 12',
+        },
+        lesser: {
+          value: 'age__lt=12',
+          description: 'querying for records matching with age less than 12',
+        },
+        lesserThanOrEqual: {
+          value: 'age__lte=12',
+          description:
+            'querying for records matching with age lesser than or equal to 12',
+        },
+        oneOf: {
+          value: 'age__in=12&age__in=13',
+          description:
+            'querying for records matching with age either to 12 or 13',
+        },
+        and: {
+          value: 'age__lte=12&name=test',
+          description:
+            'querying for records matching with age lesser than or equal to 12 AND name matching test exactly',
+        },
+        or: {
+          value: 'age__lte=12|name=test',
+          description:
+            'querying for records matching with age lesser than or equal to 12 OR name matching test exactly',
+        },
+        complex: {
+          value: 'breed__iregex=labrador&(age__lte=9&age__lte=8|name=test)',
+          description:
+            'querying for records matching regex (case insensitive) with breed equals to labrador AND (age lesser than 9 AND (age less than 8 or name equals test))',
+        },
+      },
       required: false,
       type: String,
     })
