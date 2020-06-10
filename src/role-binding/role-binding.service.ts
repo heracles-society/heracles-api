@@ -6,11 +6,19 @@ import { Model } from 'mongoose';
 import { RoleService } from '../role/role.service';
 import { RoleBindingKind } from './role-binding.dto';
 
-interface IRoleBindingValidateQuery {
-  namespace: RoleBindingKind;
+interface IPermittedResourceQueryParmas {
+  namespace: string;
   subjectId: string;
-  action: string;
+  action: any;
   resourceKind: string;
+}
+
+interface IPermittedResourceResponse {
+  all: boolean;
+  resourceIds: string[];
+}
+
+interface IRoleBindingValidateQuery extends IPermittedResourceQueryParmas {
   resourceId?: string;
 }
 
@@ -23,13 +31,10 @@ export class RoleBindingService extends BaseService<RoleBinding> {
     super(roleBindingModel);
   }
 
-  async validatePermission({
-    namespace,
-    subjectId,
-    action,
-    resourceKind,
-    resourceId,
-  }: IRoleBindingValidateQuery): Promise<boolean> {
+  async validatePermission(
+    params: IRoleBindingValidateQuery,
+  ): Promise<boolean> {
+    const { namespace, subjectId, action, resourceKind, resourceId } = params;
     const { data: roles } = await this.roleService.find(
       {
         $or: [
@@ -70,5 +75,57 @@ export class RoleBindingService extends BaseService<RoleBinding> {
       return total > 0;
     }
     return false;
+  }
+
+  async getPermittedResources(
+    params: IPermittedResourceQueryParmas,
+  ): Promise<IPermittedResourceResponse> | null {
+    const { namespace, resourceKind, subjectId, action } = params;
+    const boundRoles = await this.distinct('roles.id', {
+      $and: [
+        {
+          kind: RoleBindingKind.NAMESPACED,
+          namespace,
+          'subjects.id': subjectId,
+        },
+      ],
+    });
+    if (boundRoles.length > 0) {
+      const data = await this.roleService.findOne({
+        $and: [
+          {
+            'rules.resourceKind': resourceKind,
+            'rules.action': action,
+            'rules.resources': { $size: 0 },
+          },
+        ],
+      });
+      if (data) {
+        return {
+          all: true,
+          resourceIds: [],
+        };
+      } else {
+        const data = await this.roleService.distinct('rules.resources', {
+          $and: [
+            {
+              'rules.resourceKind': resourceKind,
+              'rules.action': action,
+              _id: {
+                $in: boundRoles,
+              },
+            },
+          ],
+        });
+        return {
+          all: false,
+          resourceIds: data,
+        };
+      }
+    }
+    return {
+      all: false,
+      resourceIds: [],
+    };
   }
 }

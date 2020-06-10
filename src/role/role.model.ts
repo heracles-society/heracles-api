@@ -3,7 +3,7 @@ import { RoleKind, Rule } from './role.dto';
 
 export class Role extends BaseModel {
   name: string;
-  kind: RoleKind = RoleKind.NAMESPACED;
+  kind: RoleKind = RoleKind.GLOBAL;
   namespace?: string;
   rules: Rule[];
 }

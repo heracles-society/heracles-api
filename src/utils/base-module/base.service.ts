@@ -35,7 +35,7 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
       .skip(skip)
       .limit(limit)
       .exec();
-    const count = await this.baseModel.countDocuments(updatedQuery).exec();
+    const count = await this.count(updatedQuery);
     const cursorId = data.length
       ? data[data.length - 1]['createdAt'].getTime()
       : null;
@@ -88,5 +88,13 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
 
     entity.remove();
     return entity;
+  }
+
+  async distinct(params: string, query: IQueryOptions): Promise<any> {
+    return this.baseModel.distinct(params, query);
+  }
+
+  async count(query: IQueryOptions): Promise<number> {
+    return this.baseModel.countDocuments(query as any).exec();
   }
 }

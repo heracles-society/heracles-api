@@ -26,4 +26,6 @@ export interface IBaseService<T> {
   update: (id: string, data: any) => Promise<T>;
   patch: (id: string, data: any) => Promise<T>;
   delete: (id: string) => Promise<T>;
+  distinct: (params: string, query: IQueryOptions) => Promise<any>;
+  count: (query: IQueryOptions) => Promise<number>;
 }

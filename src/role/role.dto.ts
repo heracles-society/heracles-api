@@ -13,7 +13,6 @@ import {
 import { Type } from 'class-transformer';
 export enum RoleKind {
   GLOBAL = 'GLOBAL',
-  NAMESPACED = 'NAMESPACED',
 }
 
 export class Rule {
@@ -32,8 +31,6 @@ export class CreateRoleDto extends BaseEntityDto {
   name: string;
   @IsNotEmpty()
   kind: RoleKind = RoleKind.GLOBAL;
-  @IsOptional()
-  namespace?: string;
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)

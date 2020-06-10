@@ -14,6 +14,7 @@ import {
   HttpStatus,
   Query,
   Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   CreateInventoryDto,
@@ -41,6 +42,8 @@ import { IQueryOptions } from '../../utils/base-module/base.interface';
 import { parseQueryParamFilters } from '../../utils/helpers/api.helpers';
 import { parseQueryParamFilterToDBQuery } from '../../utils/helpers/db.helpers';
 import { Request } from 'express';
+import { RoleBindingService } from '../../role-binding/role-binding.service';
+import { User } from '../../user/user.model';
 
 @ApiTags('inventories')
 @Controller('societies/:societyId/inventories')
@@ -48,7 +51,10 @@ import { Request } from 'express';
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, SocietyNamespaceGuard)
 export class InventoryController {
-  constructor(private readonly inventoryService: InventoryService) {}
+  constructor(
+    private readonly inventoryService: InventoryService,
+    private readonly roleBindingService: RoleBindingService,
+  ) {}
   @Get()
   @ApiOkResponse({
     type: [CreatedInventoryDto],
@@ -68,7 +74,7 @@ export class InventoryController {
   @ApiUnauthorizedResponse({
     description: 'Permission required to perform operation.',
   })
-  @SetMetadata('action', 'LIST')
+  @SetMetadata('action', 'GET')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Find` })
   public async find(
     @Param('societyId') societyId: string,
@@ -77,19 +83,38 @@ export class InventoryController {
   ) {
     const queryString: string = query.q;
     const { skip = 0, limit = 10, cursor = null } = query;
-    let params: IQueryOptions = {
-      $and: [
-        {
-          society: societyId,
-        },
-      ],
-    };
+    let params: IQueryOptions = { $and: [] };
+
     if (queryString) {
-      const parsedQueryString = parseQueryParamFilters(
-        queryString + `&society=${societyId}`,
-      );
+      const parsedQueryString = parseQueryParamFilters(queryString);
       const finalDBQuery = parseQueryParamFilterToDBQuery(parsedQueryString);
       params = finalDBQuery;
+    }
+
+    params['$and'].unshift({
+      society: societyId,
+    });
+
+    const user = req.user as User;
+
+    const {
+      all,
+      resourceIds,
+    } = await this.roleBindingService.getPermittedResources({
+      action: 'GET',
+      namespace: societyId,
+      resourceKind: INVENTORY_MODEL,
+      subjectId: user.id,
+    });
+
+    if (all === false && resourceIds.length === 0) {
+      throw new UnauthorizedException();
+    }
+
+    if (all === false) {
+      params['$and'].unshift({
+        _id: { $in: resourceIds },
+      });
     }
 
     const {
@@ -121,7 +146,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
-  @SetMetadata('action', 'CREATE_ONE')
+  @SetMetadata('action', 'CREATE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Create` })
   async create(
     @Param('societyId') societyId: string,
@@ -150,7 +175,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
-  @SetMetadata('action', 'GET_ONE')
+  @SetMetadata('action', 'GET')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Find_One` })
   async findById(
     @Param('societyId') societyId: string,
@@ -192,7 +217,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
-  @SetMetadata('action', 'PUT_ONE')
+  @SetMetadata('action', 'PUT')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Update_One` })
   async updateById(
     @Param('societyId') societyId: string,
@@ -240,7 +265,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
-  @SetMetadata('action', 'PATCH_ONE')
+  @SetMetadata('action', 'PATCH')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__Patch_One` })
   async patchById(
     @Param('societyId') societyId: string,
@@ -286,7 +311,7 @@ export class InventoryController {
     required: true,
     type: String,
   })
-  @SetMetadata('action', 'DELETE_ONE')
+  @SetMetadata('action', 'DELETE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}_Delete_One` })
   async deleteById(
     @Param('societyId') societyId: string,
