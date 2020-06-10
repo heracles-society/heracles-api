@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-
+import { RedocModule, RedocOptions } from 'nestjs-redoc';
 declare const module: any;
 
 async function bootstrap() {
@@ -21,6 +21,7 @@ async function bootstrap() {
     origin: '*',
     exposedHeaders: ['*', 'Authorization'],
   });
+
   app.setGlobalPrefix('/api/v1');
 
   const configService = app.get(ConfigService);
@@ -43,12 +44,18 @@ async function bootstrap() {
     })
     .addBearerAuth()
     .setTitle('Heracles API')
-    .setDescription('The Heracles API exposes resources over HTTP REST API.')
+    .setDescription(
+      `The Heracles API exposes resources over HTTP Rest API.
+        <ol>
+          <li>API Documentation is exposed <a href="/" target="_blank">here</a>.</li>
+          <li>Swagger UI to interact with the API is exposed <a href="/api/v1" target="_blank">here</a>.</li>
+        </ol>`,
+    )
     .setVersion('1.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('/api/v1/', app, document, {
+  SwaggerModule.setup('/api/v1', app, document, {
     swaggerOptions: {
       oauth2RedirectUrl: `http://localhost:${port}/api/v1/oauth2-redirect.html`,
       oauth: {
@@ -56,6 +63,15 @@ async function bootstrap() {
       },
     },
   });
+
+  const redocOptions: RedocOptions = {
+    title: 'Heracles API Documentation.',
+    sortPropsAlphabetically: true,
+    hideDownloadButton: false,
+    hideHostname: false,
+  };
+
+  await RedocModule.setup('/', app, document, redocOptions);
 
   if (module.hot) {
     module.hot.accept();

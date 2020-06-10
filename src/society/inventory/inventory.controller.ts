@@ -75,7 +75,7 @@ export class InventoryController {
     description: 'Permission required to perform operation.',
   })
   @SetMetadata('action', 'GET')
-  @ApiOperation({ operationId: `${INVENTORY_MODEL}__Find` })
+  @ApiOperation({ operationId: `${INVENTORY_MODEL}__find` })
   public async find(
     @Param('societyId') societyId: string,
     @Query() query: any,
@@ -147,7 +147,7 @@ export class InventoryController {
     type: String,
   })
   @SetMetadata('action', 'CREATE')
-  @ApiOperation({ operationId: `${INVENTORY_MODEL}__Create` })
+  @ApiOperation({ operationId: `${INVENTORY_MODEL}__create` })
   async create(
     @Param('societyId') societyId: string,
     @Body() entity: CreateInventoryDto,
@@ -176,7 +176,7 @@ export class InventoryController {
     type: String,
   })
   @SetMetadata('action', 'GET')
-  @ApiOperation({ operationId: `${INVENTORY_MODEL}__Find_One` })
+  @ApiOperation({ operationId: `${INVENTORY_MODEL}__find_one` })
   async findById(
     @Param('societyId') societyId: string,
     @Param('id') inventoryId: string,
@@ -218,7 +218,7 @@ export class InventoryController {
     type: String,
   })
   @SetMetadata('action', 'PUT')
-  @ApiOperation({ operationId: `${INVENTORY_MODEL}__Update_One` })
+  @ApiOperation({ operationId: `${INVENTORY_MODEL}__update_one` })
   async updateById(
     @Param('societyId') societyId: string,
     @Param('id') inventoryId: string,
@@ -266,7 +266,7 @@ export class InventoryController {
     type: String,
   })
   @SetMetadata('action', 'PATCH')
-  @ApiOperation({ operationId: `${INVENTORY_MODEL}__Patch_One` })
+  @ApiOperation({ operationId: `${INVENTORY_MODEL}__patch_one` })
   async patchById(
     @Param('societyId') societyId: string,
     @Param('id') inventoryId: string,
