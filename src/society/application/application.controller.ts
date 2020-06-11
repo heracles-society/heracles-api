@@ -8,9 +8,10 @@ import { baseControllerFactory } from '../../utils/base-module/base.controller';
 import { Application } from './application.model';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 import { ApplicationService } from './application.service';
+import { APPLICATION_MODEL } from './constants';
 
 const BaseApplicationController = baseControllerFactory<Application>({
-  name: 'applications',
+  modelName: APPLICATION_MODEL,
   routeDecorators: () =>
     applyDecorators(
       ApiParam({

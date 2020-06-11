@@ -49,6 +49,9 @@ export class RoleBindingService extends BaseService<RoleBinding> {
           {
             'rules.resourceKind': resourceKind,
             'rules.actions': action,
+            _id: {
+              $in: boundRoles,
+            },
           },
         ],
       });

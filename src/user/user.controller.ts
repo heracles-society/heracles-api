@@ -4,9 +4,10 @@ import { CreateUserDto, CreatedUserDto, UpdateUserDto } from './user.dto';
 import { User } from './user.model';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
+import { USER_MODEL } from './constants';
 
 const BaseUserController = baseControllerFactory<User>({
-  name: 'users',
+  modelName: USER_MODEL,
   entity: User,
   createEntitySchema: CreateUserDto,
   createdEntitySchema: CreatedUserDto,

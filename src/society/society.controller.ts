@@ -8,9 +8,10 @@ import {
 import { Society } from './society.model';
 import { SocietyService } from './society.service';
 import { ApiTags } from '@nestjs/swagger';
+import { SOCIETY_MODEL } from './constants';
 
 const BaseSocietyController = baseControllerFactory<Society>({
-  name: 'societies',
+  modelName: SOCIETY_MODEL,
   entity: Society,
   createEntitySchema: CreateSocietyDto,
   createdEntitySchema: CreatedSocietyDto,

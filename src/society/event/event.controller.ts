@@ -4,9 +4,10 @@ import { baseControllerFactory } from '../../utils/base-module/base.controller';
 import { Event } from './event.model';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 import { EventService } from './event.service';
+import { EVENT_MODEL } from './constants';
 
 const BaseEventController = baseControllerFactory<Event>({
-  name: 'events',
+  modelName: EVENT_MODEL,
   routeDecorators: () =>
     applyDecorators(
       ApiParam({

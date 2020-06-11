@@ -8,9 +8,10 @@ import { baseControllerFactory } from '../../utils/base-module/base.controller';
 import { Reservation } from './reservation.model';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 import { ReservationService } from './reservation.service';
+import { RESERVATION_MODEL } from './constants';
 
 const BaseReservationController = baseControllerFactory<Reservation>({
-  name: 'reservations',
+  modelName: RESERVATION_MODEL,
   routeDecorators: () =>
     applyDecorators(
       ApiParam({

@@ -8,9 +8,10 @@ import { baseControllerFactory } from '../../utils/base-module/base.controller';
 import { Complaint } from './complaint.model';
 import { ApiTags, ApiParam } from '@nestjs/swagger';
 import { ComplaintService } from './complaint.service';
+import { COMPLAINT_MODEL } from './constants';
 
 const BaseComplaintController = baseControllerFactory<Complaint>({
-  name: 'complaints',
+  modelName: COMPLAINT_MODEL,
   routeDecorators: () =>
     applyDecorators(
       ApiParam({

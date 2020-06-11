@@ -4,9 +4,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { Controller } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { Role } from './role.model';
+import { ROLE_MODEL } from './constants';
 
 const BaseRoleController = baseControllerFactory<Role>({
-  name: 'roles',
+  modelName: ROLE_MODEL,
   entity: Role,
   createEntitySchema: CreateRoleDto,
   patchEntitySchema: UpdateRoleDto,
