@@ -31,14 +31,15 @@ export class SocietyNamespaceGuard implements CanActivate {
 
     const action = this.reflector.get<string>('action', context.getHandler());
 
-    const hasPermission = await this.roleBindingService.validatePermission({
-      namespace: societyId,
-      resourceKind: resourceKind,
-      resourceId: request.params.id,
-      subjectId: user.id,
-      action: action,
-    });
+    const hasNamespaceAccess = await this.roleBindingService.hasNamespaceAccess(
+      {
+        action,
+        resourceKind,
+        namespace: societyId,
+        subjectId: user.id,
+      },
+    );
 
-    return hasPermission;
+    return hasNamespaceAccess;
   }
 }

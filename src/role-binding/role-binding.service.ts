@@ -31,6 +31,34 @@ export class RoleBindingService extends BaseService<RoleBinding> {
     super(roleBindingModel);
   }
 
+  async hasNamespaceAccess(
+    params: IPermittedResourceQueryParmas,
+  ): Promise<boolean> {
+    const { subjectId, namespace, resourceKind, action } = params;
+    const boundRoles = await this.distinct('roles.id', {
+      $and: [
+        {
+          'subjects.id': subjectId,
+          namespace,
+        },
+      ],
+    });
+    if (boundRoles) {
+      const data = await this.roleService.findOne({
+        $and: [
+          {
+            'rules.resourceKind': resourceKind,
+            'rules.actions': action,
+          },
+        ],
+      });
+      if (data) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async validatePermission(
     params: IRoleBindingValidateQuery,
   ): Promise<boolean> {
@@ -95,7 +123,7 @@ export class RoleBindingService extends BaseService<RoleBinding> {
         $and: [
           {
             'rules.resourceKind': resourceKind,
-            'rules.action': action,
+            'rules.actions': action,
             'rules.resources': { $size: 0 },
           },
         ],
@@ -110,7 +138,7 @@ export class RoleBindingService extends BaseService<RoleBinding> {
           $and: [
             {
               'rules.resourceKind': resourceKind,
-              'rules.action': action,
+              'rules.actions': action,
               _id: {
                 $in: boundRoles,
               },
