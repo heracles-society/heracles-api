@@ -3,6 +3,13 @@ import {
   CreatedBaseEntity,
 } from '../../utils/base-module/base.entity.dto';
 import { PartialType } from '@nestjs/swagger';
+import {
+  IsNotEmpty,
+  IsEnum,
+  IsArray,
+  ArrayMinSize,
+  IsOptional,
+} from 'class-validator';
 
 export enum InventoryType {
   APARTMENT = 'APARTMENT',
@@ -10,10 +17,20 @@ export enum InventoryType {
 }
 
 export class CreateInventoryDto extends BaseEntityDto {
+  @IsNotEmpty()
   name: string;
+
+  @IsNotEmpty()
+  @IsEnum(InventoryType)
   kind: InventoryType = InventoryType['APARTMENT'];
+
+  @IsArray()
+  @ArrayMinSize(0)
   owners: string[];
-  managers: string[] = [];
+
+  @IsArray()
+  @ArrayMinSize(0)
+  managers: string[];
 }
 
 export class CreatedInventoryDto extends CreateInventoryDto
@@ -24,4 +41,23 @@ export class CreatedInventoryDto extends CreateInventoryDto
   updatedAt: Date;
 }
 
-export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {}
+export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {
+  @IsNotEmpty()
+  @IsOptional()
+  name: string;
+
+  @IsNotEmpty()
+  @IsOptional()
+  @IsEnum(InventoryType)
+  kind: InventoryType = InventoryType['APARTMENT'];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(0)
+  owners: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(0)
+  managers: string[];
+}

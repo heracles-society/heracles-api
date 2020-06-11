@@ -44,6 +44,12 @@ import { parseQueryParamFilterToDBQuery } from '../../utils/helpers/db.helpers';
 import { Request } from 'express';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { User } from '../../user/user.model';
+import { RoleService } from '../../role/role.service';
+import { RoleKind } from '../../role/role.dto';
+import {
+  RoleBindingKind,
+  SubjectKind,
+} from '../../role-binding/role-binding.dto';
 
 @ApiTags('inventories')
 @Controller('societies/:societyId/inventories')
@@ -53,6 +59,7 @@ import { User } from '../../user/user.model';
 export class InventoryController {
   constructor(
     private readonly inventoryService: InventoryService,
+    private readonly roleService: RoleService,
     private readonly roleBindingService: RoleBindingService,
   ) {}
   @Get()
@@ -149,6 +156,7 @@ export class InventoryController {
   @SetMetadata('action', 'CREATE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__create` })
   async create(
+    @Req() req: Request,
     @Param('societyId') societyId: string,
     @Body() entity: CreateInventoryDto,
   ) {
@@ -157,6 +165,29 @@ export class InventoryController {
       society: societyId,
     });
     if (createdEntity) {
+      try {
+        const user = req.user as User;
+        const role = await this.roleService.create({
+          name: `${createdEntity.id}__ROLE`,
+          kind: RoleKind.GLOBAL,
+          rules: [
+            {
+              resourceKind: INVENTORY_MODEL,
+              resources: [createdEntity.id],
+              actions: ['GET'],
+            },
+          ],
+        });
+        await this.roleBindingService.create({
+          name: `${createdEntity.id}__ROLE_BINDING`,
+          kind: RoleBindingKind.NAMESPACED,
+          namespace: societyId,
+          roles: [{ id: role.id }],
+          subjects: [{ kind: SubjectKind.USER, id: user.id }],
+        });
+      } catch (error) {
+        // Add logging statement here
+      }
       return createdEntity;
     }
     throw new BadRequestException();
@@ -178,17 +209,43 @@ export class InventoryController {
   @SetMetadata('action', 'GET')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__find_one` })
   async findById(
+    @Req() req: Request,
     @Param('societyId') societyId: string,
     @Param('id') inventoryId: string,
   ) {
-    const record = await this.inventoryService.findOne({
+    const params: IQueryOptions = {
       $and: [
         {
-          id: inventoryId,
+          _id: inventoryId,
           society: societyId,
         },
       ],
+    };
+
+    const user = req.user as User;
+
+    const {
+      all,
+      resourceIds,
+    } = await this.roleBindingService.getPermittedResources({
+      action: 'GET',
+      namespace: societyId,
+      resourceKind: INVENTORY_MODEL,
+      subjectId: user.id,
     });
+
+    if (all === false && resourceIds.length === 0) {
+      throw new UnauthorizedException();
+    }
+
+    if (all === false) {
+      params['$and'].unshift({
+        _id: { $in: resourceIds },
+      });
+    }
+
+    const record = await this.inventoryService.findOne(params);
+
     if (record) {
       return record;
     }
@@ -220,18 +277,43 @@ export class InventoryController {
   @SetMetadata('action', 'PUT')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__update_one` })
   async updateById(
+    @Req() req: Request,
     @Param('societyId') societyId: string,
     @Param('id') inventoryId: string,
     @Body() body: CreateInventoryDto,
   ) {
-    const record = await this.inventoryService.findOne({
+    const params: IQueryOptions = {
       $and: [
         {
-          id: inventoryId,
+          _id: inventoryId,
           society: societyId,
         },
       ],
+    };
+
+    const user = req.user as User;
+
+    const {
+      all,
+      resourceIds,
+    } = await this.roleBindingService.getPermittedResources({
+      action: 'PUT',
+      namespace: societyId,
+      resourceKind: INVENTORY_MODEL,
+      subjectId: user.id,
     });
+
+    if (all === false && resourceIds.length === 0) {
+      throw new UnauthorizedException();
+    }
+
+    if (all === false) {
+      params['$and'].unshift({
+        _id: { $in: resourceIds },
+      });
+    }
+
+    const record = await this.inventoryService.findOne(params);
 
     if (record) {
       const updatedEntity = await this.inventoryService.update(
@@ -268,18 +350,43 @@ export class InventoryController {
   @SetMetadata('action', 'PATCH')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}__patch_one` })
   async patchById(
+    @Req() req: Request,
     @Param('societyId') societyId: string,
     @Param('id') inventoryId: string,
     @Body() body: UpdateInventoryDto,
   ) {
-    const record = await this.inventoryService.findOne({
+    const params: IQueryOptions = {
       $and: [
         {
-          id: inventoryId,
+          _id: inventoryId,
           society: societyId,
         },
       ],
+    };
+
+    const user = req.user as User;
+
+    const {
+      all,
+      resourceIds,
+    } = await this.roleBindingService.getPermittedResources({
+      action: 'PATCH',
+      namespace: societyId,
+      resourceKind: INVENTORY_MODEL,
+      subjectId: user.id,
     });
+
+    if (all === false && resourceIds.length === 0) {
+      throw new UnauthorizedException();
+    }
+
+    if (all === false) {
+      params['$and'].unshift({
+        _id: { $in: resourceIds },
+      });
+    }
+
+    const record = await this.inventoryService.findOne(params);
 
     if (record) {
       const updatedEntity = await this.inventoryService.patch(
@@ -314,17 +421,42 @@ export class InventoryController {
   @SetMetadata('action', 'DELETE')
   @ApiOperation({ operationId: `${INVENTORY_MODEL}_Delete_One` })
   async deleteById(
+    @Req() req: Request,
     @Param('societyId') societyId: string,
     @Param('id') inventoryId: string,
   ) {
-    const record = await this.inventoryService.findOne({
+    const params: IQueryOptions = {
       $and: [
         {
-          id: inventoryId,
+          _id: inventoryId,
           society: societyId,
         },
       ],
+    };
+
+    const user = req.user as User;
+
+    const {
+      all,
+      resourceIds,
+    } = await this.roleBindingService.getPermittedResources({
+      action: 'PUT',
+      namespace: societyId,
+      resourceKind: INVENTORY_MODEL,
+      subjectId: user.id,
     });
+
+    if (all === false && resourceIds.length === 0) {
+      throw new UnauthorizedException();
+    }
+
+    if (all === false) {
+      params['$and'].unshift({
+        _id: { $in: resourceIds },
+      });
+    }
+
+    const record = await this.inventoryService.findOne(params);
 
     if (record) {
       const updatedEntity = await this.inventoryService.delete(inventoryId);

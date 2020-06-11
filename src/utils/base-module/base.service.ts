@@ -46,16 +46,17 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
     };
   }
   async findOne(query: IQueryOptions): Promise<T> {
-    return this.baseModel.findOne(query as any).exec();
+    return await this.baseModel.findOne(query as any).exec();
   }
 
   async findById(id: string): Promise<T> {
-    return this.baseModel.findById(id).exec();
+    return await this.baseModel.findById(id).exec();
   }
 
   async create(entity: BaseEntityDto): Promise<T> {
-    const createdEvent = new this.baseModel(entity);
-    return createdEvent.save();
+    const createdEntity = new this.baseModel(entity);
+    await createdEntity.save();
+    return createdEntity;
   }
 
   async update(id: string, data: any): Promise<T> {
@@ -64,8 +65,7 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
       return null;
     }
 
-    entity.update(data);
-    return entity;
+    return await this.baseModel.findByIdAndUpdate({ _id: entity.id }, data);
   }
 
   async patch(id: string, data: any): Promise<T> {
@@ -76,8 +76,11 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
 
     const oldData = entity.toJSON();
     const updatedData = apply(oldData, data);
-    entity.update(updatedData);
-    return entity;
+    return await this.baseModel.findOneAndUpdate(
+      { _id: entity.id },
+      updatedData as any,
+      { new: true },
+    );
   }
 
   async delete(id: string): Promise<any> {
@@ -86,15 +89,15 @@ export class BaseService<T extends BaseModel> implements IBaseService<T> {
       return null;
     }
 
-    entity.remove();
+    await entity.remove();
     return entity;
   }
 
   async distinct(params: string, query: IQueryOptions): Promise<any> {
-    return this.baseModel.distinct(params, query);
+    return await this.baseModel.distinct(params, query);
   }
 
   async count(query: IQueryOptions): Promise<number> {
-    return this.baseModel.countDocuments(query as any).exec();
+    return await this.baseModel.countDocuments(query as any).exec();
   }
 }
