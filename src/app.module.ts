@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.module';
 import { MessagesModule } from './messages/messages.module';
 import { EmergencyModule } from './emergency/emergency.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { EmergencyModule } from './emergency/emergency.module';
     UtilsModule,
     MessagesModule,
     EmergencyModule,
+    OrdersModule,
   ],
   providers: [],
 })
