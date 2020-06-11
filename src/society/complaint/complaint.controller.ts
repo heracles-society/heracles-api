@@ -1,35 +1,38 @@
-import { Controller, applyDecorators } from '@nestjs/common';
+import { Controller, SetMetadata } from '@nestjs/common';
+
 import {
   CreateComplaintDto,
   CreatedComplaintDto,
   UpdateComplaintDto,
 } from './complaint.dto';
-import { baseControllerFactory } from '../../utils/base-module/base.controller';
-import { Complaint } from './complaint.model';
-import { ApiTags, ApiParam } from '@nestjs/swagger';
+
+import { ApiTags } from '@nestjs/swagger';
+
 import { ComplaintService } from './complaint.service';
 import { COMPLAINT_MODEL } from './constants';
+import { RoleBindingService } from '../../role-binding/role-binding.service';
+import { RoleService } from '../../role/role.service';
+import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
+import { Complaint } from './complaint.model';
 
-const BaseComplaintController = baseControllerFactory<Complaint>({
+const BaseSocietyNamespacedComplaintController = societyBaseNamespaceControllerFactory<
+  Complaint
+>({
   modelName: COMPLAINT_MODEL,
-  routeDecorators: () =>
-    applyDecorators(
-      ApiParam({
-        name: 'societyId',
-        required: true,
-        type: String,
-      }),
-    ),
-  entity: Complaint,
   createEntitySchema: CreateComplaintDto,
-  patchEntitySchema: UpdateComplaintDto,
   createdEntitySchema: CreatedComplaintDto,
+  patchEntitySchema: UpdateComplaintDto,
 });
 
 @ApiTags('complaints')
 @Controller('societies/:societyId/complaints')
-export class ComplaintController extends BaseComplaintController {
-  constructor(complaintService: ComplaintService) {
-    super(complaintService);
+@SetMetadata('ResourceKind', COMPLAINT_MODEL)
+export class ComplaintController extends BaseSocietyNamespacedComplaintController {
+  constructor(
+    complaintService: ComplaintService,
+    roleService: RoleService,
+    roleBindingService: RoleBindingService,
+  ) {
+    super(complaintService, roleService, roleBindingService);
   }
 }
