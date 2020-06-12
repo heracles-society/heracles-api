@@ -18,6 +18,8 @@ import { namespaceBaseControllerFactory } from '../../utils/namespace-module/nam
 const BaseSocietyNamespacedComplaintController = namespaceBaseControllerFactory<
   Complaint
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: COMPLAINT_MODEL,
   createEntitySchema: CreateComplaintDto,
   createdEntitySchema: CreatedComplaintDto,

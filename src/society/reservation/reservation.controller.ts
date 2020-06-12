@@ -18,6 +18,8 @@ import { namespaceBaseControllerFactory } from '../../utils/namespace-module/nam
 const BaseSocietyNamespacedReservationController = namespaceBaseControllerFactory<
   Reservation
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: RESERVATION_MODEL,
   createEntitySchema: CreateReservationDto,
   createdEntitySchema: CreatedReservationDto,

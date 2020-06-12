@@ -14,6 +14,8 @@ import { namespaceBaseControllerFactory } from '../../utils/namespace-module/nam
 const BaseSocietyNamespacedEventController = namespaceBaseControllerFactory<
   Event
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: EVENT_MODEL,
   createEntitySchema: CreateEventDto,
   createdEntitySchema: CreatedEventDto,

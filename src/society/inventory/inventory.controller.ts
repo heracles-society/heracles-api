@@ -17,6 +17,8 @@ import { Inventory } from './inventory.model';
 const BaseSocietyNamespacedInventoryController = namespaceBaseControllerFactory<
   Inventory
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: INVENTORY_MODEL,
   createEntitySchema: CreateInventoryDto,
   createdEntitySchema: CreatedInventoryDto,

@@ -18,6 +18,8 @@ import { Application } from './application.model';
 const BaseSocietyNamespacedApplicationController = namespaceBaseControllerFactory<
   Application
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: APPLICATION_MODEL,
   createEntitySchema: CreateApplicationDto,
   createdEntitySchema: CreatedApplicationDto,
