@@ -1,19 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import { SocietyModule } from './society/society.module';
+import { UserModule } from './user/user.module';
 import configuration from './config/configuration';
-import { UsersModule } from './users/users.module';
-import { OrganizationsModule } from './organizations/organizations.module';
-import { SocietiesModule } from './societies/societies.module';
-import { InventoriesModule } from './inventories/inventories.module';
-import { ComplaintsModule } from './complaints/complaints.module';
-import { ReservationsModule } from './reservations/reservations.module';
-import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.module';
-import { UtilsModule } from './utils/utils.module';
-import { MessagesModule } from './messages/messages.module';
-import { EmergencyModule } from './emergency/emergency.module';
-import { OrdersModule } from './orders/orders.module';
+import { RoleBindingModule } from './role-binding/role-binding.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -21,19 +14,12 @@ import { OrdersModule } from './orders/orders.module';
       load: [configuration],
       expandVariables: true,
     }),
-    ComplaintsModule,
     DatabaseModule,
-    OrganizationsModule,
-    SocietiesModule,
-    UsersModule,
-    InventoriesModule,
-    ReservationsModule,
-    EventsModule,
+    SocietyModule,
+    UserModule,
     AuthModule,
-    UtilsModule,
-    MessagesModule,
-    EmergencyModule,
-    OrdersModule,
+    RoleModule,
+    RoleBindingModule,
   ],
   providers: [],
 })

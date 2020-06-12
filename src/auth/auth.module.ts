@@ -1,18 +1,19 @@
 import { Module, HttpModule } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
+import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleOauth2Strategy } from './google.service';
 import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import googleConfig from './google.config';
 import { JwtStrategy } from './jwt.strategy';
+import { RoleModule } from '../role/role.module';
 
 @Module({
   imports: [
     HttpModule,
-    UsersModule,
+    UserModule,
     PassportModule,
     ConfigModule.forFeature(googleConfig),
     JwtModule.registerAsync({
@@ -31,6 +32,7 @@ import { JwtStrategy } from './jwt.strategy';
       },
       inject: [ConfigService],
     }),
+    RoleModule,
   ],
   providers: [AuthService, GoogleOauth2Strategy, JwtStrategy],
   exports: [AuthService],

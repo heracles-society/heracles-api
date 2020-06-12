@@ -87,7 +87,7 @@ const getDBQuery = (key: string, value: any) => {
 
 export const parseQueryParamFilterToDBQuery = (
   queryParamFilter: QueryParamFilter,
-): any => {
+): { $and: any[] } => {
   const andQueries = queryParamFilter.andQueries ?? [];
   const orQueries = queryParamFilter.orQueries ?? [];
 
