@@ -9,6 +9,8 @@ import {
   IsArray,
   ArrayMinSize,
   IsOptional,
+  IsString,
+  IsDateString,
 } from 'class-validator';
 
 export enum InventoryType {
@@ -35,18 +37,25 @@ export class CreateInventoryDto extends BaseEntityDto {
 
 export class CreatedInventoryDto extends CreateInventoryDto
   implements CreatedBaseEntity {
+  @IsNotEmpty()
+  @IsString()
   id: string;
+  @IsNotEmpty()
+  @IsString()
   society: string;
+  @IsNotEmpty()
+  @IsDateString()
   createdAt: Date;
+  @IsNotEmpty()
+  @IsDateString()
   updatedAt: Date;
 }
 
 export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {
-  @IsNotEmpty()
   @IsOptional()
+  @IsString()
   name: string;
 
-  @IsNotEmpty()
   @IsOptional()
   @IsEnum(InventoryType)
   kind: InventoryType = InventoryType['APARTMENT'];
