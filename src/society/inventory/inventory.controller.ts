@@ -12,9 +12,9 @@ import { InventoryService } from './inventory.service';
 import { INVENTORY_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 import { Inventory } from './inventory.model';
-const BaseSocietyNamespacedInventoryController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedInventoryController = namespaceBaseControllerFactory<
   Inventory
 >({
   modelName: INVENTORY_MODEL,

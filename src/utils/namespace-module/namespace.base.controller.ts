@@ -27,24 +27,25 @@ import {
   ApiBody,
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { PaginatedAPIParams } from '../utils/pagination.decorators';
-import { IQueryOptions } from '../utils/base-module/base.interface';
-import { parseQueryParamFilters } from '../utils/helpers/api.helpers';
-import { parseQueryParamFilterToDBQuery } from '../utils/helpers/db.helpers';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { PaginatedAPIParams } from '../pagination.decorators';
+import { IQueryOptions } from '../base-module/base.interface';
+import { parseQueryParamFilters } from '../helpers/api.helpers';
+import { parseQueryParamFilterToDBQuery } from '../helpers/db.helpers';
 import { Request } from 'express';
-import { User } from '../user/user.model';
-import { RoleKind } from '../role/role.dto';
-import { RoleBindingKind, SubjectKind } from '../role-binding/role-binding.dto';
-import { BaseService } from '../utils/base-module/base.service';
-import { BaseModel } from '../utils/base-module/base.model';
-import { SocietyNamespaceGuard } from './society.namespace.guard';
-import { RoleService } from '../role/role.service';
-import { RoleBindingService } from '../role-binding/role-binding.service';
+import { User } from '../../user/user.model';
+import { RoleKind } from '../../role/role.dto';
+import {
+  RoleBindingKind,
+  SubjectKind,
+} from '../../role-binding/role-binding.dto';
+import { BaseService } from '../base-module/base.service';
+import { BaseModel } from '../base-module/base.model';
+import { NamespaceGuard } from './namespace.guard';
+import { RoleService } from '../../role/role.service';
+import { RoleBindingService } from '../../role-binding/role-binding.service';
 
-export function societyBaseNamespaceControllerFactory<
-  T extends BaseModel
->(options: {
+export function namespaceBaseControllerFactory<T extends BaseModel>(options: {
   modelName;
   createEntitySchema;
   createdEntitySchema;
@@ -71,7 +72,7 @@ export function societyBaseNamespaceControllerFactory<
     : () => applyDecorators(ApiBearerAuth(), UseGuards(JwtAuthGuard));
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, SocietyNamespaceGuard)
+  @UseGuards(JwtAuthGuard, NamespaceGuard)
   class BaseSocietyNamespaceController {
     constructor(
       private readonly baseService: BaseService<T>,

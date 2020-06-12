@@ -1,12 +1,12 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module, Global } from '@nestjs/common';
 import { RoleBindingService } from './role-binding.service';
 import { RoleBindingController } from './role-binding.controller';
 import { DatabaseModule } from '../database/database.module';
 import { RoleBindingProvider } from './role-binding.provider';
-import { RoleModule } from '../role/role.module';
 
+@Global()
 @Module({
-  imports: [DatabaseModule, forwardRef(() => RoleModule)],
+  imports: [DatabaseModule],
   providers: [RoleBindingService, ...RoleBindingProvider.getProviders()],
   controllers: [RoleBindingController],
   exports: [RoleBindingService],

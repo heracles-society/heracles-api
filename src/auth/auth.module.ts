@@ -8,7 +8,6 @@ import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import googleConfig from './google.config';
 import { JwtStrategy } from './jwt.strategy';
-import { RoleModule } from '../role/role.module';
 
 @Module({
   imports: [
@@ -32,7 +31,6 @@ import { RoleModule } from '../role/role.module';
       },
       inject: [ConfigService],
     }),
-    RoleModule,
   ],
   providers: [AuthService, GoogleOauth2Strategy, JwtStrategy],
   exports: [AuthService],

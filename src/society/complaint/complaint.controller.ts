@@ -12,10 +12,10 @@ import { ComplaintService } from './complaint.service';
 import { COMPLAINT_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
 import { Complaint } from './complaint.model';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 
-const BaseSocietyNamespacedComplaintController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedComplaintController = namespaceBaseControllerFactory<
   Complaint
 >({
   modelName: COMPLAINT_MODEL,

@@ -1,9 +1,9 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RoleBindingService } from '../role-binding/role-binding.service';
+import { RoleBindingService } from '../../role-binding/role-binding.service';
 
 @Injectable()
-export class SocietyNamespaceGuard implements CanActivate {
+export class NamespaceGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private roleBindingService: RoleBindingService,

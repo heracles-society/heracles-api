@@ -12,10 +12,10 @@ import { ApplicationService } from './application.service';
 import { APPLICATION_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 import { Application } from './application.model';
 
-const BaseSocietyNamespacedApplicationController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedApplicationController = namespaceBaseControllerFactory<
   Application
 >({
   modelName: APPLICATION_MODEL,

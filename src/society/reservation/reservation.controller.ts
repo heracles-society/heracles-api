@@ -12,10 +12,10 @@ import { ReservationService } from './reservation.service';
 import { RESERVATION_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
 import { Reservation } from './reservation.model';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 
-const BaseSocietyNamespacedReservationController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedReservationController = namespaceBaseControllerFactory<
   Reservation
 >({
   modelName: RESERVATION_MODEL,
