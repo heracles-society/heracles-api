@@ -12,6 +12,7 @@ import { EventsModule } from './events/events.module';
 import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.module';
 import { MessagesModule } from './messages/messages.module';
+import { EmergencyModule } from './emergency/emergency.module';
 import { OrdersModule } from './orders/orders.module';
 
 @Module({
@@ -31,6 +32,7 @@ import { OrdersModule } from './orders/orders.module';
     AuthModule,
     UtilsModule,
     MessagesModule,
+    EmergencyModule,
     OrdersModule,
   ],
   providers: [],
