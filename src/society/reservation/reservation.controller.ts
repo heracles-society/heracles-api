@@ -27,6 +27,7 @@ const BaseSocietyNamespacedReservationController = namespaceBaseControllerFactor
 @ApiTags('reservations')
 @Controller('societies/:societyId/reservations')
 @SetMetadata('ResourceKind', RESERVATION_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class ReservationController extends BaseSocietyNamespacedReservationController {
   constructor(
     reservationService: ReservationService,

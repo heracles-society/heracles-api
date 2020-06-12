@@ -23,19 +23,30 @@ export class NamespaceGuard implements CanActivate {
       );
     }
 
+    let namespaceKey = this.reflector.get<string>(
+      'NamespaceKey',
+      context.getHandler(),
+    );
+
+    if (!namespaceKey) {
+      namespaceKey = this.reflector.get<string>(
+        'NamespaceKey',
+        context.getClass(),
+      );
+    }
     const user = request.user;
-    const societyId = request.params.societyId;
-    if (!societyId || !user) {
+    if (!user) {
       return false;
     }
 
+    const namespace = request.params[namespaceKey];
     const action = this.reflector.get<string>('action', context.getHandler());
 
     const hasNamespaceAccess = await this.roleBindingService.hasNamespaceAccess(
       {
         action,
         resourceKind,
-        namespace: societyId,
+        namespace,
         subjectId: user.id,
       },
     );

@@ -25,6 +25,7 @@ const BaseSocietyNamespacedInventoryController = namespaceBaseControllerFactory<
 @ApiTags('inventories')
 @Controller('societies/:societyId/inventories')
 @SetMetadata('ResourceKind', INVENTORY_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class InventoryController extends BaseSocietyNamespacedInventoryController {
   constructor(
     inventoryService: InventoryService,

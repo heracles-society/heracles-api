@@ -22,6 +22,7 @@ const BaseSocietyNamespacedEventController = namespaceBaseControllerFactory<
 @ApiTags('events')
 @Controller('societies/:societyId/events')
 @SetMetadata('ResourceKind', EVENT_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class EventController extends BaseSocietyNamespacedEventController {
   constructor(
     eventService: EventService,

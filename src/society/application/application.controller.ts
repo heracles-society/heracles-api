@@ -27,6 +27,7 @@ const BaseSocietyNamespacedApplicationController = namespaceBaseControllerFactor
 @ApiTags('applications')
 @Controller('societies/:societyId/applications')
 @SetMetadata('ResourceKind', APPLICATION_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class ApplicationController extends BaseSocietyNamespacedApplicationController {
   constructor(
     applicationService: ApplicationService,

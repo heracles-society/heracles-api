@@ -27,6 +27,7 @@ const BaseSocietyNamespacedComplaintController = namespaceBaseControllerFactory<
 @ApiTags('complaints')
 @Controller('societies/:societyId/complaints')
 @SetMetadata('ResourceKind', COMPLAINT_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class ComplaintController extends BaseSocietyNamespacedComplaintController {
   constructor(
     complaintService: ComplaintService,
