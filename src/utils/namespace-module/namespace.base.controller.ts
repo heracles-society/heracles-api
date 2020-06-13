@@ -46,12 +46,12 @@ import { RoleService } from '../../role/role.service';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 
 export function namespaceBaseControllerFactory<T extends BaseModel>(options: {
-  namespaceParam;
-  namespaceKey;
-  modelName;
-  createEntitySchema;
-  createdEntitySchema;
-  patchEntitySchema;
+  namespaceParam: string;
+  namespaceKey: string;
+  modelName: string;
+  createEntitySchema: { new (): any };
+  createdEntitySchema: { new (): any };
+  patchEntitySchema: { new (): any };
   routeDecorators?: Function;
 }): any {
   const modelName = options.modelName;
@@ -84,7 +84,7 @@ export function namespaceBaseControllerFactory<T extends BaseModel>(options: {
           }),
         );
 
-  class BaseSocietyNamespaceController {
+  class BaseNamespaceController {
     constructor(
       private readonly baseService: BaseService<T>,
       private readonly roleService: RoleService,
@@ -473,5 +473,5 @@ export function namespaceBaseControllerFactory<T extends BaseModel>(options: {
     }
   }
 
-  return BaseSocietyNamespaceController;
+  return BaseNamespaceController;
 }
