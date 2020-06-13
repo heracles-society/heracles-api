@@ -8,6 +8,7 @@ import { ComplaintModule } from './complaint/complaint.module';
 import { EventModule } from './event/event.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { ApplicationModule } from './application/application.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ApplicationModule } from './application/application.module';
     forwardRef(() => EventModule),
     forwardRef(() => InventoryModule),
     forwardRef(() => ApplicationModule),
+    OrderModule,
   ],
   controllers: [SocietyController],
   providers: [SocietyService, ...SocietyProvider.getProviders()],

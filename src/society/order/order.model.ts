@@ -1,0 +1,12 @@
+import { BaseModel } from '../../utils/base-module/base.model';
+import { OrderStatus } from './order.dto';
+
+export class Order extends BaseModel {
+  razorpayid: string;
+  amount: number;
+  description: string;
+  status: OrderStatus;
+  createdFor: string;
+  createdBy: string;
+  metadata: object;
+}
