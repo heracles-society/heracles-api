@@ -27,31 +27,36 @@ import {
   ApiBody,
   ApiNotFoundResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt.guard';
-import { PaginatedAPIParams } from '../utils/pagination.decorators';
-import { IQueryOptions } from '../utils/base-module/base.interface';
-import { parseQueryParamFilters } from '../utils/helpers/api.helpers';
-import { parseQueryParamFilterToDBQuery } from '../utils/helpers/db.helpers';
+import { JwtAuthGuard } from '../../auth/jwt.guard';
+import { PaginatedAPIParams } from '../pagination.decorators';
+import { IQueryOptions } from '../base-module/base.interface';
+import { parseQueryParamFilters } from '../helpers/api.helpers';
+import { parseQueryParamFilterToDBQuery } from '../helpers/db.helpers';
 import { Request } from 'express';
-import { User } from '../user/user.model';
-import { RoleKind } from '../role/role.dto';
-import { RoleBindingKind, SubjectKind } from '../role-binding/role-binding.dto';
-import { BaseService } from '../utils/base-module/base.service';
-import { BaseModel } from '../utils/base-module/base.model';
-import { SocietyNamespaceGuard } from './society.namespace.guard';
-import { RoleService } from '../role/role.service';
-import { RoleBindingService } from '../role-binding/role-binding.service';
+import { User } from '../../user/user.model';
+import { RoleKind } from '../../role/role.dto';
+import {
+  RoleBindingKind,
+  SubjectKind,
+} from '../../role-binding/role-binding.dto';
+import { BaseService } from '../base-module/base.service';
+import { BaseModel } from '../base-module/base.model';
+import { NamespaceGuard } from './namespace.guard';
+import { RoleService } from '../../role/role.service';
+import { RoleBindingService } from '../../role-binding/role-binding.service';
 
-export function societyBaseNamespaceControllerFactory<
-  T extends BaseModel
->(options: {
-  modelName;
-  createEntitySchema;
-  createdEntitySchema;
-  patchEntitySchema;
+export function namespaceBaseControllerFactory<T extends BaseModel>(options: {
+  namespaceParam: string;
+  namespaceKey: string;
+  modelName: string;
+  createEntitySchema: { new (): any };
+  createdEntitySchema: { new (): any };
+  patchEntitySchema: { new (): any };
   routeDecorators?: Function;
 }): any {
   const modelName = options.modelName;
+  const namespaceKey = options.namespaceKey;
+  const namespaceParam = options.namespaceParam;
   const CreateEntitySchema = options.createEntitySchema;
   const CreatedEntitySchema = options.createdEntitySchema;
   const PatchEntitySchema = options.patchEntitySchema;
@@ -68,11 +73,18 @@ export function societyBaseNamespaceControllerFactory<
 
   const RouteDecorators = options.routeDecorators
     ? options.routeDecorators
-    : () => applyDecorators(ApiBearerAuth(), UseGuards(JwtAuthGuard));
+    : () =>
+        applyDecorators(
+          ApiBearerAuth(),
+          UseGuards(JwtAuthGuard, NamespaceGuard),
+          ApiParam({
+            name: namespaceParam,
+            required: true,
+            type: String,
+          }),
+        );
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, SocietyNamespaceGuard)
-  class BaseSocietyNamespaceController {
+  class BaseNamespaceController {
     constructor(
       private readonly baseService: BaseService<T>,
       private readonly roleService: RoleService,
@@ -81,11 +93,6 @@ export function societyBaseNamespaceControllerFactory<
     @Get()
     @ApiOkResponse({
       type: [CreatedEntitySchema],
-    })
-    @ApiParam({
-      name: 'societyId',
-      required: true,
-      type: String,
     })
     @ApiQuery({
       name: 'q',
@@ -101,7 +108,7 @@ export function societyBaseNamespaceControllerFactory<
     @RouteDecorators('GET')
     @ApiOperation({ operationId: `${modelName}__find` })
     public async find(
-      @Param('societyId') societyId: string,
+      @Param(namespaceParam) namespaceValue: string,
       @Query() query: any,
       @Req() req: Request,
     ) {
@@ -116,7 +123,7 @@ export function societyBaseNamespaceControllerFactory<
       }
 
       params['$and'].unshift({
-        society: societyId,
+        [namespaceKey]: namespaceValue,
       });
 
       const user = req.user as User;
@@ -126,7 +133,7 @@ export function societyBaseNamespaceControllerFactory<
         resourceIds,
       } = await this.roleBindingService.getPermittedResources({
         action: 'GET',
-        namespace: societyId,
+        namespace: namespaceValue,
         resourceKind: modelName,
         subjectId: user.id,
       });
@@ -168,22 +175,17 @@ export function societyBaseNamespaceControllerFactory<
       description: 'Data for entity creation',
       isArray: false,
     })
-    @ApiParam({
-      name: 'societyId',
-      required: true,
-      type: String,
-    })
     @SetMetadata('action', 'CREATE')
     @RouteDecorators('CREATE')
     @ApiOperation({ operationId: `${modelName}__create` })
     async create(
       @Req() req: Request,
-      @Param('societyId') societyId: string,
+      @Param(namespaceParam) namespaceValue: string,
       @Body() entity: CreateEntitySchemaKlass,
     ) {
       const createdEntity = await this.baseService.create({
         ...entity,
-        society: societyId,
+        [namespaceKey]: namespaceValue,
       });
       if (createdEntity) {
         try {
@@ -202,7 +204,7 @@ export function societyBaseNamespaceControllerFactory<
           await this.roleBindingService.create({
             name: `${createdEntity.id}__ROLE_BINDING`,
             kind: RoleBindingKind.NAMESPACED,
-            namespace: societyId,
+            namespace: namespaceValue,
             roles: [{ id: role.id }],
             subjects: [{ kind: SubjectKind.USER, id: user.id }],
           });
@@ -225,24 +227,19 @@ export function societyBaseNamespaceControllerFactory<
     @ApiNotFoundResponse({
       description: 'Entity record not found.',
     })
-    @ApiParam({
-      name: 'societyId',
-      required: true,
-      type: String,
-    })
     @SetMetadata('action', 'GET')
     @RouteDecorators('GET')
     @ApiOperation({ operationId: `${modelName}__find_one` })
     async findById(
       @Req() req: Request,
-      @Param('societyId') societyId: string,
+      @Param(namespaceParam) namespaceValue: string,
       @Param('id') inventoryId: string,
     ) {
       const params: IQueryOptions = {
         $and: [
           {
             _id: inventoryId,
-            society: societyId,
+            [namespaceKey]: namespaceValue,
           },
         ],
       };
@@ -254,7 +251,7 @@ export function societyBaseNamespaceControllerFactory<
         resourceIds,
       } = await this.roleBindingService.getPermittedResources({
         action: 'GET',
-        namespace: societyId,
+        namespace: namespaceValue,
         resourceKind: modelName,
         subjectId: user.id,
       });
@@ -294,17 +291,12 @@ export function societyBaseNamespaceControllerFactory<
       description: 'Data for updating entity',
       isArray: false,
     })
-    @ApiParam({
-      name: 'societyId',
-      required: true,
-      type: String,
-    })
     @SetMetadata('action', 'PUT')
     @RouteDecorators('PUT')
     @ApiOperation({ operationId: `${modelName}__update_one` })
     async updateById(
       @Req() req: Request,
-      @Param('societyId') societyId: string,
+      @Param(namespaceParam) namespaceValue: string,
       @Param('id') inventoryId: string,
       @Body() body: CreateEntitySchemaKlass,
     ) {
@@ -312,7 +304,7 @@ export function societyBaseNamespaceControllerFactory<
         $and: [
           {
             _id: inventoryId,
-            society: societyId,
+            [namespaceKey]: namespaceValue,
           },
         ],
       };
@@ -324,7 +316,7 @@ export function societyBaseNamespaceControllerFactory<
         resourceIds,
       } = await this.roleBindingService.getPermittedResources({
         action: 'PUT',
-        namespace: societyId,
+        namespace: namespaceValue,
         resourceKind: modelName,
         subjectId: user.id,
       });
@@ -365,17 +357,12 @@ export function societyBaseNamespaceControllerFactory<
     @ApiBody({
       type: PatchEntitySchema,
     })
-    @ApiParam({
-      name: 'societyId',
-      required: true,
-      type: String,
-    })
     @SetMetadata('action', 'PATCH')
     @RouteDecorators('PATCH')
     @ApiOperation({ operationId: `${modelName}__patch_one` })
     async patchById(
       @Req() req: Request,
-      @Param('societyId') societyId: string,
+      @Param(namespaceParam) namespaceValue: string,
       @Param('id') inventoryId: string,
       @Body() body: PatchEntitySchemaKlass,
     ) {
@@ -383,7 +370,7 @@ export function societyBaseNamespaceControllerFactory<
         $and: [
           {
             _id: inventoryId,
-            society: societyId,
+            [namespaceKey]: namespaceValue,
           },
         ],
       };
@@ -395,7 +382,7 @@ export function societyBaseNamespaceControllerFactory<
         resourceIds,
       } = await this.roleBindingService.getPermittedResources({
         action: 'PATCH',
-        namespace: societyId,
+        namespace: namespaceValue,
         resourceKind: modelName,
         subjectId: user.id,
       });
@@ -434,24 +421,19 @@ export function societyBaseNamespaceControllerFactory<
     @ApiNotFoundResponse({
       description: 'Entity record not found.',
     })
-    @ApiParam({
-      name: 'societyId',
-      required: true,
-      type: String,
-    })
     @SetMetadata('action', 'DELETE')
     @RouteDecorators('DELETE')
-    @ApiOperation({ operationId: `${modelName}_Delete_One` })
+    @ApiOperation({ operationId: `${modelName}__delete_one` })
     async deleteById(
       @Req() req: Request,
-      @Param('societyId') societyId: string,
+      @Param(namespaceParam) namespaceValue: string,
       @Param('id') inventoryId: string,
     ) {
       const params: IQueryOptions = {
         $and: [
           {
             _id: inventoryId,
-            society: societyId,
+            [namespaceKey]: namespaceValue,
           },
         ],
       };
@@ -463,7 +445,7 @@ export function societyBaseNamespaceControllerFactory<
         resourceIds,
       } = await this.roleBindingService.getPermittedResources({
         action: 'PUT',
-        namespace: societyId,
+        namespace: namespaceValue,
         resourceKind: modelName,
         subjectId: user.id,
       });
@@ -491,5 +473,5 @@ export function societyBaseNamespaceControllerFactory<
     }
   }
 
-  return BaseSocietyNamespaceController;
+  return BaseNamespaceController;
 }

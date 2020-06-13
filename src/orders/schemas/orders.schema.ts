@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { USER_MODEL } from '../../users/constants';
+import { USER_MODEL } from '../../user/constants';
 
 export const OrdersSchema = new mongoose.Schema(
   {

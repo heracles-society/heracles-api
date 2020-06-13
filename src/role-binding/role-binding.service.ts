@@ -36,10 +36,15 @@ export class RoleBindingService extends BaseService<RoleBinding> {
   ): Promise<boolean> {
     const { subjectId, namespace, resourceKind, action } = params;
     const boundRoles = await this.distinct('roles.id', {
-      $and: [
+      $or: [
         {
           'subjects.id': subjectId,
+          kind: RoleBindingKind.NAMESPACED,
           namespace,
+        },
+        {
+          'subjects.id': subjectId,
+          kind: RoleBindingKind.GLOBAL,
         },
       ],
     });

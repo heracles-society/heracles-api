@@ -32,13 +32,12 @@ import { IQueryOptions } from './base.interface';
 import { BaseModel } from './base.model';
 import { PaginatedAPIParams } from '../pagination.decorators';
 import { JwtAuthGuard } from '../../auth/jwt.guard';
-enum METHOD_DECORATOR_TYPES {
-  GET_ALL = 'GET_ALL',
-  POST = 'POST',
-  GET_ONE = 'GET_ONE',
-  PUT_ONE = 'PUT_ONE',
-  PATCH_ONE = 'PATCH_ONE',
-  DELETE_ONE = 'DELETE_ONE',
+enum METHOD_ACTION {
+  GET = 'GET',
+  CREATE = 'CREATE',
+  PUT = 'PUT',
+  PATCH = 'PATCH',
+  DELETE = 'DELETE',
 }
 interface IBaseControllerFactoryOptions<T> {
   modelName: string;
@@ -144,7 +143,7 @@ export function baseControllerFactory<T extends BaseModel>(
     @ApiUnauthorizedResponse({
       description: 'Permission required to perform operation.',
     })
-    @RouteDecorators(METHOD_DECORATOR_TYPES.GET_ALL)
+    @RouteDecorators(METHOD_ACTION.GET)
     @ApiOperation({ operationId: `${options.modelName}__find` })
     public async find(@Query() query: any, @Req() req: Request) {
       const queryString: string = query.q;
@@ -183,7 +182,7 @@ export function baseControllerFactory<T extends BaseModel>(
       description: 'Data for entity creation',
       isArray: false,
     })
-    @RouteDecorators(METHOD_DECORATOR_TYPES.POST)
+    @RouteDecorators(METHOD_ACTION.CREATE)
     @ApiOperation({ operationId: `${options.modelName}__create` })
     async create(@Body() entity: CreateEntitySchemaKlass) {
       const createdEntity = await this.baseService.create(entity);
@@ -201,7 +200,7 @@ export function baseControllerFactory<T extends BaseModel>(
     @ApiUnauthorizedResponse({
       description: 'Permission required to perform operation.',
     })
-    @RouteDecorators(METHOD_DECORATOR_TYPES.GET_ONE)
+    @RouteDecorators(METHOD_ACTION.GET)
     @ApiOperation({ operationId: `${options.modelName}__find_one` })
     async findById(@Param('id') entityId: string) {
       const record = await this.baseService.findById(entityId);
@@ -228,7 +227,7 @@ export function baseControllerFactory<T extends BaseModel>(
       description: 'Data for updating entity',
       isArray: false,
     })
-    @RouteDecorators(METHOD_DECORATOR_TYPES.PUT_ONE)
+    @RouteDecorators(METHOD_ACTION.PUT)
     @ApiOperation({ operationId: `${options.modelName}__update_one` })
     async updateById(
       @Param('id') entityId: string,
@@ -255,7 +254,7 @@ export function baseControllerFactory<T extends BaseModel>(
     @ApiBody({
       type: PatchEntitySchema,
     })
-    @RouteDecorators(METHOD_DECORATOR_TYPES.PATCH_ONE)
+    @RouteDecorators(METHOD_ACTION.PATCH)
     @ApiOperation({ operationId: `${options.modelName}__patch_one` })
     async patchById(
       @Param('id') entityId: string,
@@ -280,7 +279,7 @@ export function baseControllerFactory<T extends BaseModel>(
     @ApiNotFoundResponse({
       description: 'Entity record not found.',
     })
-    @RouteDecorators(METHOD_DECORATOR_TYPES.DELETE_ONE)
+    @RouteDecorators(METHOD_ACTION.DELETE)
     @ApiOperation({ operationId: `${options.modelName}__delete_one` })
     async deleteById(@Param('id') entityId: string) {
       const updatedEntity = await this.baseService.delete(entityId);

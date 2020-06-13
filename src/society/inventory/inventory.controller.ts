@@ -12,11 +12,13 @@ import { InventoryService } from './inventory.service';
 import { INVENTORY_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 import { Inventory } from './inventory.model';
-const BaseSocietyNamespacedInventoryController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedInventoryController = namespaceBaseControllerFactory<
   Inventory
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: INVENTORY_MODEL,
   createEntitySchema: CreateInventoryDto,
   createdEntitySchema: CreatedInventoryDto,
@@ -25,6 +27,7 @@ const BaseSocietyNamespacedInventoryController = societyBaseNamespaceControllerF
 @ApiTags('inventories')
 @Controller('societies/:societyId/inventories')
 @SetMetadata('ResourceKind', INVENTORY_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class InventoryController extends BaseSocietyNamespacedInventoryController {
   constructor(
     inventoryService: InventoryService,

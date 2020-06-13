@@ -12,12 +12,14 @@ import { ComplaintService } from './complaint.service';
 import { COMPLAINT_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
 import { Complaint } from './complaint.model';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 
-const BaseSocietyNamespacedComplaintController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedComplaintController = namespaceBaseControllerFactory<
   Complaint
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: COMPLAINT_MODEL,
   createEntitySchema: CreateComplaintDto,
   createdEntitySchema: CreatedComplaintDto,
@@ -27,6 +29,7 @@ const BaseSocietyNamespacedComplaintController = societyBaseNamespaceControllerF
 @ApiTags('complaints')
 @Controller('societies/:societyId/complaints')
 @SetMetadata('ResourceKind', COMPLAINT_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class ComplaintController extends BaseSocietyNamespacedComplaintController {
   constructor(
     complaintService: ComplaintService,

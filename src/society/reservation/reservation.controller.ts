@@ -12,12 +12,14 @@ import { ReservationService } from './reservation.service';
 import { RESERVATION_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
 import { Reservation } from './reservation.model';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 
-const BaseSocietyNamespacedReservationController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedReservationController = namespaceBaseControllerFactory<
   Reservation
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: RESERVATION_MODEL,
   createEntitySchema: CreateReservationDto,
   createdEntitySchema: CreatedReservationDto,
@@ -27,6 +29,7 @@ const BaseSocietyNamespacedReservationController = societyBaseNamespaceControlle
 @ApiTags('reservations')
 @Controller('societies/:societyId/reservations')
 @SetMetadata('ResourceKind', RESERVATION_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class ReservationController extends BaseSocietyNamespacedReservationController {
   constructor(
     reservationService: ReservationService,

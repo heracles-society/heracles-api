@@ -12,12 +12,14 @@ import { ApplicationService } from './application.service';
 import { APPLICATION_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
 import { Application } from './application.model';
 
-const BaseSocietyNamespacedApplicationController = societyBaseNamespaceControllerFactory<
+const BaseSocietyNamespacedApplicationController = namespaceBaseControllerFactory<
   Application
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: APPLICATION_MODEL,
   createEntitySchema: CreateApplicationDto,
   createdEntitySchema: CreatedApplicationDto,
@@ -27,6 +29,7 @@ const BaseSocietyNamespacedApplicationController = societyBaseNamespaceControlle
 @ApiTags('applications')
 @Controller('societies/:societyId/applications')
 @SetMetadata('ResourceKind', APPLICATION_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class ApplicationController extends BaseSocietyNamespacedApplicationController {
   constructor(
     applicationService: ApplicationService,

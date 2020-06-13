@@ -1,9 +1,9 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RoleBindingService } from '../role-binding/role-binding.service';
+import { RoleBindingService } from '../../role-binding/role-binding.service';
 
 @Injectable()
-export class SocietyNamespaceGuard implements CanActivate {
+export class NamespaceGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private roleBindingService: RoleBindingService,
@@ -23,19 +23,30 @@ export class SocietyNamespaceGuard implements CanActivate {
       );
     }
 
+    let namespaceKey = this.reflector.get<string>(
+      'NamespaceKey',
+      context.getHandler(),
+    );
+
+    if (!namespaceKey) {
+      namespaceKey = this.reflector.get<string>(
+        'NamespaceKey',
+        context.getClass(),
+      );
+    }
     const user = request.user;
-    const societyId = request.params.societyId;
-    if (!societyId || !user) {
+    if (!user) {
       return false;
     }
 
+    const namespace = request.params[namespaceKey];
     const action = this.reflector.get<string>('action', context.getHandler());
 
     const hasNamespaceAccess = await this.roleBindingService.hasNamespaceAccess(
       {
         action,
         resourceKind,
-        namespace: societyId,
+        namespace,
         subjectId: user.id,
       },
     );

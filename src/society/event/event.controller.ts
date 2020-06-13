@@ -8,11 +8,14 @@ import { EventService } from './event.service';
 import { EVENT_MODEL } from './constants';
 import { RoleBindingService } from '../../role-binding/role-binding.service';
 import { RoleService } from '../../role/role.service';
-import { societyBaseNamespaceControllerFactory } from '../society.base.namespace.controller';
 import { Event } from './event.model';
-const BaseSocietyNamespacedEventController = societyBaseNamespaceControllerFactory<
+import { namespaceBaseControllerFactory } from '../../utils/namespace-module/namespace.base.controller';
+
+const BaseSocietyNamespacedEventController = namespaceBaseControllerFactory<
   Event
 >({
+  namespaceParam: 'societyId',
+  namespaceKey: 'society',
   modelName: EVENT_MODEL,
   createEntitySchema: CreateEventDto,
   createdEntitySchema: CreatedEventDto,
@@ -21,6 +24,7 @@ const BaseSocietyNamespacedEventController = societyBaseNamespaceControllerFacto
 @ApiTags('events')
 @Controller('societies/:societyId/events')
 @SetMetadata('ResourceKind', EVENT_MODEL)
+@SetMetadata('NamespaceKey', 'societyId')
 export class EventController extends BaseSocietyNamespacedEventController {
   constructor(
     eventService: EventService,
