@@ -6,7 +6,6 @@ import { SOCIETY_MODEL } from '../constants';
 
 const OrderSchema = new Schema(
   {
-    razorpayid: String,
     amount: Number,
     description: String,
     status: String,
