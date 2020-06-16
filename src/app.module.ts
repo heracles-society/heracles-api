@@ -7,6 +7,7 @@ import configuration from './config/configuration';
 import { AuthModule } from './auth/auth.module';
 import { RoleBindingModule } from './role-binding/role-binding.module';
 import { RoleModule } from './role/role.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RoleModule } from './role/role.module';
     AuthModule,
     RoleModule,
     RoleBindingModule,
+    PaymentModule,
   ],
   providers: [],
 })

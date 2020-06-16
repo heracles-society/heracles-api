@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { SocietyController } from './society.controller';
 import { SocietyService } from './society.service';
 import { SocietyProvider } from './society.provider';
@@ -13,11 +13,11 @@ import { OrderModule } from './order/order.module';
 @Module({
   imports: [
     DatabaseModule,
-    forwardRef(() => ReservationModule),
-    forwardRef(() => ComplaintModule),
-    forwardRef(() => EventModule),
-    forwardRef(() => InventoryModule),
-    forwardRef(() => ApplicationModule),
+    ReservationModule,
+    ComplaintModule,
+    EventModule,
+    InventoryModule,
+    ApplicationModule,
     OrderModule,
   ],
   controllers: [SocietyController],

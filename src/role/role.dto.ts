@@ -2,13 +2,14 @@ import {
   BaseEntityDto,
   CreatedBaseEntity,
 } from '../utils/base-module/base.entity.dto';
-import { PartialType } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsOptional,
   IsArray,
   ValidateNested,
   ArrayMinSize,
+  IsEnum,
+  IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 export enum RoleKind {
@@ -28,10 +29,13 @@ export class Rule {
 
 export class CreateRoleDto extends BaseEntityDto {
   @IsNotEmpty()
+  @IsString()
   name: string;
   @IsNotEmpty()
+  @IsEnum(RoleKind)
   kind: RoleKind = RoleKind.GLOBAL;
   @IsArray()
+  @IsNotEmpty()
   @ValidateNested({ each: true })
   @ArrayMinSize(1)
   @Type(() => Rule)
@@ -44,4 +48,17 @@ export class CreatedRoleDto extends CreateRoleDto implements CreatedBaseEntity {
   updatedAt: Date;
 }
 
-export class UpdateRoleDto extends PartialType(CreateRoleDto) {}
+export class UpdateRoleDto extends CreateRoleDto {
+  @IsOptional()
+  @IsString()
+  name: string;
+  @IsOptional()
+  @IsEnum(RoleKind)
+  kind: RoleKind = RoleKind.GLOBAL;
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @ArrayMinSize(1)
+  @Type(() => Rule)
+  rules: Rule[];
+}
