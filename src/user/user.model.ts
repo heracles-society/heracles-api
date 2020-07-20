@@ -8,4 +8,5 @@ export class User extends BaseModel {
   givenName?: string;
   picture?: string;
   openId?: string;
+  mobile?: string;
 }

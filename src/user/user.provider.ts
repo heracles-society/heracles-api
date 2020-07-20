@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema(
     givenName: String,
     picture: String,
     openId: String,
+    mobile: String,
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } },
 );

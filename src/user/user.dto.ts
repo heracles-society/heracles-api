@@ -12,6 +12,7 @@ export class CreateUserDto extends BaseEntityDto {
   givenName?: string;
   picture?: string;
   openId?: string;
+  mobile?: string;
 }
 
 export class CreatedUserDto extends CreateUserDto implements CreatedBaseEntity {
