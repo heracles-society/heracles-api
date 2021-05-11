@@ -34,7 +34,7 @@
     "crypto": "^1.0.1",
     "date-fns": "^2.14.0",
     "json-merge-patch": "^1.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "mongoose": "^5.9.11",
     "nestjs-redoc": "^1.2.2",
     "passport": "^0.4.1",
